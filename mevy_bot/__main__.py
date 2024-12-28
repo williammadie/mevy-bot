@@ -5,7 +5,7 @@ from langchain_ollama import OllamaEmbeddings
 
 from mevy_bot.source_collection.source_inventory import SourceInventory
 from mevy_bot.source_collection.source_retriever import SourceRetriever
-from mevy_bot.vector_store.vector_store_builder import VectorStoreBuilder
+from mevy_bot.vector_store.vector_store import VectorStore
 load_dotenv()
 
 logging.basicConfig(
@@ -34,8 +34,14 @@ def main() -> None:
         model="all-minilm"
     )
 
-    vector_store = VectorStoreBuilder(embedding_model)
-    vector_store.write_on_disk()
+    vector_store = VectorStore(embedding_model)
+    #vector_store.erase_store_on_disk()
+    #vector_store.build_from_data_storage_files()
+    #vector_store.write_on_disk()
+    vector_store.build_from_disk()
+    vector_store.search_in_store("Quelles sont les modalités de vente d'un bien immobilier ?")
+    #vector_store.erase_store_on_disk()
+
 
 
 if __name__ == '__main__':
