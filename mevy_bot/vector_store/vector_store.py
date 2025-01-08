@@ -11,6 +11,8 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from mevy_bot.exceptions.unsupported_file_type_error import UnsupportedFileTypeError
 from mevy_bot.exceptions.vector_store_not_initialized_error import VectorStoreNotInitializedError
 from mevy_bot.path_finder import PathFinder
+from mevy_bot.file_reader import FileReader
+from mevy_bot.file_splitter import FileSplitter
 
 l = logging.getLogger(__name__)
 
@@ -42,24 +44,23 @@ class VectorStore:
     def build_from_data_storage_files(self: Self) -> None:
         """ Build a vector store from PDF files in data_storage dir """
         l.info("Building vector store from data storage files...")
-        all_docs = []
+        all_docs_text_chunks = []
         storage_dir = PathFinder.data_storage()
         for filename in os.listdir(storage_dir):
             if not filename.endswith('.pdf'):
                 raise UnsupportedFileTypeError(filename)
 
             filepath = os.path.join(storage_dir, filename)
-            loader = PyPDFLoader(filepath)
-            pages = loader.load()
+            file_reader = FileReader()
+            file_text = file_reader.read_text_from_pdf(filepath)
 
-            text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000,
-                chunk_overlap=1000
-            )
-            docs = text_splitter.split_documents(pages)
-
-            all_docs.extend(docs)
-        self.db = FAISS.from_documents(all_docs, self.embedding_model)
+            file_splitter = FileSplitter()
+            text_chunks = file_splitter.split_in_chunks(file_text)
+            all_docs_text_chunks.extend(text_chunks)
+            print(all_docs_text_chunks[6208])
+            exit()
+        self.db = FAISS.from_documents(
+            all_docs_text_chunks, self.embedding_model)
         l.info("Vector store successfully built.")
 
     def build_from_disk(self: Self) -> None:

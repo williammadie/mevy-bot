@@ -1,0 +1,10 @@
+1. Mettre à jour VectorStore pour utiliser le nouveau système
+    et non plus FAISS avec écriture sur disque
+2. Relier le QueryHandler au nouveau système de VectorStore
+
+
+Points d'attention :
+
+Gestion des mises à jour de fichiers (à faire après avoir traiter les points 1 et 2)
+    - Conserver les hashs des fichiers pour voir ceux qui sont mis à jour (data_store => file_storage + file_registry.json)
+    - Formaliser les ids des vecteurs dans les collections Qdrant pour pouvoir suivre quel vecteur appartient à quel document
