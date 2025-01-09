@@ -10,12 +10,12 @@ from mevy_bot.embedder.openai_embedder import OpenAIEmbedder
 class QdrantEmbeddingConverter(ABC):
 
     def __init__(
-        self: Self
+        self: Self,
     ) -> None:
-        self.embedder = OpenAIEmbedder()
+        self.embedding_model = OpenAIEmbedder()
 
     def get_embeddings_text_chunk(self: Self, text_chunk: str) -> PointStruct:
-        response = self.embedder.generate_embeddings(text_chunk)
+        response = self.embedding_model.generate_embeddings(text_chunk)
 
         point_embeddings = response['data'][0]['embedding']
         point_id = str(uuid.uuid4())
