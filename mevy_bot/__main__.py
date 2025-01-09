@@ -28,18 +28,20 @@ def main() -> None:
 
     store_client = QdrantCollection()
     vector_store = VectorStore(store_client)
-    collection_name = "mevy-chatbot"
-    vector_store.build_from_data_storage_files(collection_name)
+    collection_name = "debugging"
+    #store_client.create_collection(collection_name)
+    #vector_store.build_from_data_storage_files(collection_name)
+    user_query = "What is the most important concept of the IEEE830 standard?"
     res = vector_store.search_in_store(
-        "Tous les citoyens sont-ils égaux devant la loi ?",
+        user_query,
         collection_name
     )
     print(res)
 
-    # llm_model = OpenAI()
-    # query_handler = OpenAIQueryHandler(vector_store, llm_model)
-    # completion = query_handler.generate_response("Tous les citoyens sont-ils égaux devant la loi ?")
-    # print(completion)
+    llm_model = OpenAI()
+    query_handler = OpenAIQueryHandler(vector_store, llm_model)
+    completion = query_handler.generate_response_with_context(user_query, collection_name)
+    print(completion)
 
 
 if __name__ == '__main__':

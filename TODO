@@ -1,7 +1,4 @@
-1. Mettre à jour VectorStore pour utiliser le nouveau système
-    et non plus FAISS avec écriture sur disque
-2. Relier le QueryHandler au nouveau système de VectorStore
-
+1. Comprendre pourquoi Qdrant upsert timeout avec une grosse query
 
 Points d'attention :
 

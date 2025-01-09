@@ -2,12 +2,18 @@ from typing import Self
 
 from mevy_bot.query_handler.query_handler import QueryHandler
 
+
 class OpenAIQueryHandler(QueryHandler):
 
-    def generate_response(self: Self, question: str) -> str:
-        context_documents = self.retrieve_context_documents(question)
-        context = "\n\n".join(
-            doc.page_content for doc in context_documents)
+    def generate_response_with_context(self: Self, question: str, collection_name: str) -> str:
+        context_documents = self.retrieve_context_documents(
+            question, collection_name)
+
+        context = ""
+        for doc in context_documents:
+            if doc.payload is not None:
+                doc_content = doc.payload.get('text')
+                context += f'{doc_content}\n\n'
 
         system_prompt = self.build_system_prompt()
         user_prompt = self.build_user_prompt(question, context)

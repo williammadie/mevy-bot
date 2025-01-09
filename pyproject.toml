@@ -24,6 +24,10 @@ qdrant-client = "^1.12.2"
 pylint = "^3.3.1"
 autopep8 = "^2.3.1"
 
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.3.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"

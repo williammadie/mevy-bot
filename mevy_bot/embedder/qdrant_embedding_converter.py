@@ -17,7 +17,7 @@ class QdrantEmbeddingConverter(ABC):
     def get_embeddings_text_chunk(self: Self, text_chunk: str) -> PointStruct:
         response = self.embedding_model.generate_embeddings(text_chunk)
 
-        point_embeddings = response['data'][0]['embedding']
+        point_embeddings = response.data[0].embedding
         point_id = str(uuid.uuid4())
 
         return PointStruct(

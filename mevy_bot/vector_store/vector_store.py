@@ -9,11 +9,13 @@ from qdrant_client.models import (
 from mevy_bot.exceptions.unsupported_file_type_error import UnsupportedFileTypeError
 from mevy_bot.path_finder import PathFinder
 from mevy_bot.file_reader import FileReader
-from mevy_bot.file_splitter import FileSplitter
+from mevy_bot.text_chunker import TextChunker
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
 from mevy_bot.embedder.qdrant_embedding_converter import QdrantEmbeddingConverter
+from mevy_bot.embedder.cost_predictor import CostPredictor
 
 l = logging.getLogger(__name__)
+
 
 class VectorStore:
 
@@ -42,16 +44,16 @@ class VectorStore:
             file_reader = FileReader()
             file_text = file_reader.read_text_from_pdf(filepath)
 
-            file_splitter = FileSplitter()
-            text_chunks = file_splitter.split_in_chunks(file_text)
+            text_chunker = TextChunker()
+            text_chunks = text_chunker.split_in_chunks(file_text)
             all_docs_text_chunks.extend(text_chunks)
-            print(len(all_docs_text_chunks))
-            print(all_docs_text_chunks[0])
-            print("====================================")
-            print(all_docs_text_chunks[1])
-            print("====================================")
-            print(all_docs_text_chunks[6209])
-            exit()
+
+            expected_cost = CostPredictor.calculate_embedding_cost(
+                len(all_docs_text_chunks),
+                TextChunker.CHUNK_SIZE
+            )
+            l.info("The embeddings generation for %d text chunks is expected to cost %f$", len(
+                text_chunks), expected_cost)
 
             vectors = self.embedder.get_embeddings_text_chunks(
                 all_docs_text_chunks)
@@ -65,8 +67,8 @@ class VectorStore:
         collection_name: str
     ) -> List[ScoredPoint]:
         """ Search a string pattern in vector store """
-        file_splitter = FileSplitter()
-        text_chunks = file_splitter.split_in_chunks(search_pattern)
+        text_chunker = TextChunker()
+        text_chunks = text_chunker.split_in_chunks(search_pattern)
 
         if len(text_chunks) > 1:
             l.warning("Too many chunks (%d) in query. Only considering the first one.", len(
@@ -74,7 +76,7 @@ class VectorStore:
 
         response = self.embedder.embedding_model.generate_embeddings(
             text_chunks[0])
-        point_embeddings = response['data'][0]['embedding']
+        point_embeddings = response.data[0].embedding
 
         return self.store_client.search_in_collection(
             collection_name,
