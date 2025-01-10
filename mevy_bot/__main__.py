@@ -25,8 +25,8 @@ logs_dir = PathFinder.log_dirpath()
 os.makedirs(logs_dir, exist_ok=True)
 rotation_logging_handler = TimedRotatingFileHandler(
     filename=os.path.join(logs_dir, 'log'),
-    interval=10,
-    when='S',
+    interval=1,
+    when='D',
     backupCount=7
 )
 rotation_logging_handler.setFormatter(logging.Formatter(LOGGING_FORMAT))
@@ -42,15 +42,14 @@ def main() -> None:
 
     store_client = QdrantCollection()
     vector_store = VectorStore(store_client)
-    collection_name = "debugging"
-    #store_client.create_collection(collection_name)
-    #vector_store.build_from_data_storage_files(collection_name)
-    user_query = "What is the most important concept of the IEEE830 standard?"
-    res = vector_store.search_in_store(
-        user_query,
-        collection_name
-    )
-    logger.info(res)
+    collection_name = "mevy-bot"
+    vector_store.build_from_data_storage_files(collection_name)
+    #user_query = "What is the most important concept of the IEEE830 standard?"
+    #res = vector_store.search_in_store(
+    #    user_query,
+    #    collection_name
+    #)
+    #logger.info(res)
 
     #llm_model = OpenAI()
     #query_handler = OpenAIQueryHandler(vector_store, llm_model)

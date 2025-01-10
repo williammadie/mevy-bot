@@ -1,4 +1,8 @@
-1. Tester si le remplacement d'upsert par upload_points ne plante pas
+1. Sauvegarder les logs en dehors de logs/ (pour qu'ils ne soient pas effacés)
+2. Regarder pourquoi le cost predictor s'est trompé
+3. Afficher le nombre de tokens à traiter lors de l'embedding (au même endroit que le cost predictor)
+4. Afficher un log de progression (chunk 45/620) pour la partie qui appelle l'API OpenAI d'Embedding (la partie la plus longue)
+5. Tester des questions basiques sur le code civil, le CCH et le code de la consommation pour voir si le bot est perdu ou non
 
 Points d'attention :
 
