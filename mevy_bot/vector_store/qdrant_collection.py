@@ -33,7 +33,10 @@ class QdrantCollection():
         points: List[PointStruct],
         collection_name: str
     ) -> None:
-        self.client.upsert(
+        if not self.client.collection_exists(collection_name):
+            self.create_collection(collection_name)
+
+        self.client.upload_points(
             collection_name=collection_name,
             wait=True,
             points=points

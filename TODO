@@ -1,4 +1,4 @@
-1. Comprendre pourquoi Qdrant upsert timeout avec une grosse query
+1. Tester si le remplacement d'upsert par upload_points ne plante pas
 
 Points d'attention :
 

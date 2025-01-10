@@ -69,7 +69,6 @@ class VectorStore:
         """ Search a string pattern in vector store """
         text_chunker = TextChunker()
         text_chunks = text_chunker.split_in_chunks(search_pattern)
-
         if len(text_chunks) > 1:
             l.warning("Too many chunks (%d) in query. Only considering the first one.", len(
                 text_chunks))

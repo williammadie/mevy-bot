@@ -6,6 +6,7 @@ data_definition/**
 data_storage/**
 data_storage**
 vector_store/**
+logs/**
 
 # Python
 .mypy_cache

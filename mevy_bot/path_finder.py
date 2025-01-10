@@ -17,8 +17,15 @@ class PathFinder:
 
     @classmethod
     def data_storage(cls) -> str:
-        return os.path.join(cls.project_path(), "data_storage_3")
-    
+        return os.path.join(cls.project_path(), "data_storage")
+
     @classmethod
     def vector_store(cls) -> str:
         return os.path.join(cls.project_path(), "vector_store")
+
+    @classmethod
+    def log_dirpath(cls) -> str:
+        log_dirpath = os.getenv('LOGS_DIRPATH')
+        if log_dirpath is None:
+            return os.path.join(cls.project_path(), 'logs')
+        return log_dirpath
