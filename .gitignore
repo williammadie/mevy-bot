@@ -7,6 +7,7 @@ data_storage/**
 data_storage**
 vector_store/**
 logs/**
+logs_backup/**
 
 # Python
 .mypy_cache

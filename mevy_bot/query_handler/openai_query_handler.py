@@ -26,7 +26,8 @@ class OpenAIQueryHandler(QueryHandler):
                     "role": "user",
                     "content": user_prompt
                 }
-            ]
+            ],
+            temperature=self.MODEL_TEMPERATURE
         )
 
         return completion

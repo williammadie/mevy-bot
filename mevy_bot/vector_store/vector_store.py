@@ -13,6 +13,8 @@ from mevy_bot.text_chunker import TextChunker
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
 from mevy_bot.embedder.qdrant_embedding_converter import QdrantEmbeddingConverter
 from mevy_bot.embedder.cost_predictor import CostPredictor
+from mevy_bot.embedder.token_calculator import TokenCalculator
+from mevy_bot.embedder.human_number import HumanNumber
 
 l = logging.getLogger(__name__)
 
@@ -45,16 +47,27 @@ class VectorStore:
             file_text = file_reader.read_text_from_pdf(filepath)
 
             text_chunker = TextChunker()
-            text_chunks = text_chunker.split_in_chunks(file_text)
+            text_chunks = text_chunker.split_text_into_chunks(file_text)
             all_docs_text_chunks.extend(text_chunks)
 
-            expected_cost = CostPredictor.calculate_embedding_cost(
+            nb_tokens = 0
+            for chunk in all_docs_text_chunks:
+                nb_tokens += TokenCalculator.nb_tokens_in_text_chunk(chunk)
+            l.info("Starting the embeddings generation for %s tokens (%s characters)",
+                   HumanNumber.format(nb_tokens),
+                   HumanNumber.format(len(all_docs_text_chunks)
+                                      * TextChunker.CHUNK_SIZE)
+                   )
+
+            expected_cost = CostPredictor.calculate_cost_based_on_chunk_size(
                 len(all_docs_text_chunks),
                 TextChunker.CHUNK_SIZE
             )
-            l.info("The embeddings generation for %d text chunks is expected to cost %f$", len(
-                text_chunks), expected_cost)
-
+            l.info("The embeddings generation for %s text chunks is expected to cost %f$",
+                   HumanNumber.format(len(text_chunks)), expected_cost)
+            print(len(text_chunks[0]))
+            print(text_chunks[0])
+            exit()
             vectors = self.embedder.get_embeddings_text_chunks(
                 all_docs_text_chunks)
             self.store_client.insert_vectors_in_collection(
@@ -73,6 +86,7 @@ class VectorStore:
             l.warning("Too many chunks (%d) in query. Only considering the first one.", len(
                 text_chunks))
 
+        # TODO: If the query is too long, only the first chunk will be considered
         response = self.embedder.embedding_model.generate_embeddings(
             text_chunks[0])
         point_embeddings = response.data[0].embedding

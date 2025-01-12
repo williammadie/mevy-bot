@@ -1,3 +1,4 @@
+import logging
 import uuid
 from abc import ABC
 from typing import Self, List
@@ -6,6 +7,7 @@ from qdrant_client.http.models import PointStruct
 
 from mevy_bot.embedder.openai_embedder import OpenAIEmbedder
 
+l = logging.getLogger(__name__)
 
 class QdrantEmbeddingConverter(ABC):
 
@@ -27,8 +29,10 @@ class QdrantEmbeddingConverter(ABC):
         )
 
     def get_embeddings_text_chunks(self: Self, text_chunks: List[str]) -> List[PointStruct]:
+        nb_chunks = len(text_chunks)
         points = []
-        for text_chunk in text_chunks:
+        for chunk_index, text_chunk in enumerate(text_chunks):
             point = self.get_embeddings_text_chunk(text_chunk)
             points.append(point)
+            l.info("%d/%d chunks have been processed.", chunk_index + 1, nb_chunks)
         return points

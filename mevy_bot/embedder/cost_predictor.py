@@ -18,19 +18,19 @@ class CostPredictor:
     """
 
     @staticmethod
-    def calculate_embedding_cost(
+    def calculate_cost_based_on_chunk_size(
         nb_chunks: int,
         chunk_size: int,
         price_per_1k_tokens: Decimal = OpenAIEmbedder.PRICE_PER_1K_TOKENS
     ) -> Decimal:
         nb_tokens = Decimal(nb_chunks * chunk_size / 4)
-        return CostPredictor.calculate_embedding_cost_from_tokens(
+        return CostPredictor.calculate_cost_based_on_token_count(
             nb_tokens,
             price_per_1k_tokens
         )
 
     @staticmethod
-    def calculate_embedding_cost_from_tokens(
+    def calculate_cost_based_on_token_count(
         nb_tokens: Decimal,
         price_per_1k_tokens: Decimal = OpenAIEmbedder.PRICE_PER_1K_TOKENS
     ) -> Decimal:

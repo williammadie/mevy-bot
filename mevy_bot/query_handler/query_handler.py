@@ -8,6 +8,8 @@ from mevy_bot.vector_store.vector_store import VectorStore
 
 class QueryHandler(ABC):
 
+    MODEL_TEMPERATURE = 0
+
     def __init__(
         self: Self,
         vector_store: VectorStore,

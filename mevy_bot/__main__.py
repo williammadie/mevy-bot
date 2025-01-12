@@ -44,7 +44,7 @@ def main() -> None:
     vector_store = VectorStore(store_client)
     collection_name = "mevy-bot"
     vector_store.build_from_data_storage_files(collection_name)
-    #user_query = "What is the most important concept of the IEEE830 standard?"
+    #user_query = "Quels sont les libertés fondamentales de l'individu en France ?"
     #res = vector_store.search_in_store(
     #    user_query,
     #    collection_name

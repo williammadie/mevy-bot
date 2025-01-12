@@ -7,9 +7,9 @@ from mevy_bot.embedder.cost_predictor import CostPredictor
 class TestCostPredictor(unittest.TestCase):
 
     def test_calculate_embedding_cost_ada_v2(self):
-        actual_embedding_cost = CostPredictor.calculate_embedding_cost(
+        actual_embedding_cost = CostPredictor.calculate_cost_based_on_chunk_size(
             6210,
-            1000,
+            TextChunker.CHUNK_SIZE,
             Decimal('0.0001')
         )
         actual_rounded_embedding_cost = Decimal(round(actual_embedding_cost, 5))
@@ -20,13 +20,42 @@ class TestCostPredictor(unittest.TestCase):
         )
 
     def test_calculate_embedding_cost_from_tokens_ada_v2(self):
-        actual_embedding_cost = CostPredictor.calculate_embedding_cost_from_tokens(
+        actual_embedding_cost = CostPredictor.calculate_cost_based_on_token_count(
             Decimal(19_783_176),
             Decimal('0.0001')
         )
         actual_rounded_embedding_cost = Decimal(
             round(actual_embedding_cost, 2))
         expected_embedding_cost = Decimal('1.98')
+        self.assertEqual(
+            actual_rounded_embedding_cost.compare(expected_embedding_cost),
+            Decimal('0')
+        )
+    
+    def test_calculate_embedding_cost_from_tokens_text_3_small(self):
+        actual_embedding_cost = CostPredictor.calculate_cost_based_on_token_count(
+            Decimal(6_671_278),
+            Decimal('0.000020 ')
+        )
+        actual_rounded_embedding_cost = Decimal(
+            round(actual_embedding_cost, 2))
+        expected_embedding_cost = Decimal('0.13')
+        self.assertEqual(
+            actual_rounded_embedding_cost.compare(expected_embedding_cost),
+            Decimal('0')
+        )
+    
+    def test_calculate_embedding_cost_text_3_small(self):
+        actual_embedding_cost = CostPredictor.calculate_cost_based_on_chunk_size(
+            6210,
+            TextChunker.CHUNK_SIZE,
+            Decimal('0.000020')
+        )
+        actual_rounded_embedding_cost = Decimal(
+            round(actual_embedding_cost, 5))
+        expected_embedding_cost = Decimal('0.15525')
+        print(actual_rounded_embedding_cost * 4)
+        print(expected_embedding_cost)
         self.assertEqual(
             actual_rounded_embedding_cost.compare(expected_embedding_cost),
             Decimal('0')

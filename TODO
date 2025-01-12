@@ -1,8 +1,9 @@
-1. Sauvegarder les logs en dehors de logs/ (pour qu'ils ne soient pas effacés)
-2. Regarder pourquoi le cost predictor s'est trompé
-3. Afficher le nombre de tokens à traiter lors de l'embedding (au même endroit que le cost predictor)
-4. Afficher un log de progression (chunk 45/620) pour la partie qui appelle l'API OpenAI d'Embedding (la partie la plus longue)
-5. Tester des questions basiques sur le code civil, le CCH et le code de la consommation pour voir si le bot est perdu ou non
+1. Implémenter une stratégie de découpage en chunk sans Langchain (trop de magie) (avec tiktoken ?)
+2. En se basant sur les nouveaux logs et découpage en chunks, comprendre pourquoi le cost predictor s'est trompé
+3. Regarder comment évaluer la performance de mon système RAG (Retrieval et Generation)
+de manière à commencer à comparer:
+- les différents modèles pour la génération (métriques généralistes ?)
+- les différents paramètres pour le retrieval (quelles métriques ?) 
 
 Points d'attention :
 
