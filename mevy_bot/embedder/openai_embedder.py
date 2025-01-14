@@ -5,20 +5,20 @@ from decimal import Decimal
 from openai import OpenAI
 from openai.types import CreateEmbeddingResponse
 
+from mevy_bot.models.openai import EmbeddingModel
+
 
 class OpenAIEmbedder:
 
-    PRICE_PER_1K_TOKENS: Decimal = Decimal('0.000020')
-
     def __init__(
         self: Self,
-        embedding_model_name: str = "text-embedding-3-small"
+        embedding_model: EmbeddingModel
     ) -> None:
-        self.embedding_model_name = embedding_model_name
+        self.embedding_model = embedding_model
         self.client = OpenAI()
 
     def generate_embeddings(self: Self, text_chunk: str) -> CreateEmbeddingResponse:
         return self.client.embeddings.create(
             input=text_chunk,
-            model=self.embedding_model_name
+            model=self.embedding_model.name
         )

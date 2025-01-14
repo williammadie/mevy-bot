@@ -11,6 +11,8 @@ from mevy_bot.source_collection.source_retriever import SourceRetriever
 from mevy_bot.vector_store.vector_store import VectorStore
 from mevy_bot.query_handler.openai_query_handler import OpenAIQueryHandler
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
+from mevy_bot.models.openai import OpenAIModelFactory
+
 
 load_dotenv()
 
@@ -40,9 +42,13 @@ def main() -> None:
     # source_retriever = SourceRetriever(source_inventory)
     # source_retriever.download_all()
 
-    store_client = QdrantCollection()
-    vector_store = VectorStore(store_client)
-    collection_name = "mevy-bot"
+    embedding_model = OpenAIModelFactory.text_embedding_3_small()
+    chat_model = OpenAIModelFactory.gpt4o_mini()
+
+    store_client = QdrantCollection(embedding_model.vector_dimensions)
+    vector_store = VectorStore(store_client, embedding_model, chat_model)
+    collection_name = "mevy-bot-1024_0.2"
+    #vector_store.predict_costs_of_store_building()
     vector_store.build_from_data_storage_files(collection_name)
     #user_query = "Quels sont les libertés fondamentales de l'individu en France ?"
     #res = vector_store.search_in_store(

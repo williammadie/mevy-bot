@@ -1,8 +1,8 @@
+import logging
 from typing import Self
 from decimal import Decimal
 
-from mevy_bot.embedder.openai_embedder import OpenAIEmbedder
-
+l = logging.getLogger(__name__)
 
 class CostPredictor:
     """
@@ -16,22 +16,22 @@ class CostPredictor:
     source: https://help.openai.com/en/articles/4936856-what-are-tokens-and-how-to-count-them
 
     """
+    def __init__(self: Self, price_per_1k_input_tokens: Decimal) -> None:
+        self.price_per_1k_input_tokens: Decimal = price_per_1k_input_tokens
 
-    @staticmethod
     def calculate_cost_based_on_chunk_size(
+        self: Self,
         nb_chunks: int,
-        chunk_size: int,
-        price_per_1k_tokens: Decimal = OpenAIEmbedder.PRICE_PER_1K_TOKENS
+        chunk_size: int
     ) -> Decimal:
         nb_tokens = Decimal(nb_chunks * chunk_size / 4)
-        return CostPredictor.calculate_cost_based_on_token_count(
-            nb_tokens,
-            price_per_1k_tokens
+        return self.calculate_cost_based_on_token_count(
+            nb_tokens
         )
 
-    @staticmethod
     def calculate_cost_based_on_token_count(
-        nb_tokens: Decimal,
-        price_per_1k_tokens: Decimal = OpenAIEmbedder.PRICE_PER_1K_TOKENS
+        self: Self,
+        nb_tokens: Decimal
     ) -> Decimal:
-        return nb_tokens * price_per_1k_tokens / 1000
+        return nb_tokens * self.price_per_1k_input_tokens / 1000
+

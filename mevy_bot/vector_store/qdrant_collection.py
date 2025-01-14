@@ -9,13 +9,13 @@ from qdrant_client.models import (
     ScoredPoint
 )
 
-VECTOR_DIMENSIONS = 1536
 VECTOR_DISTANCE = Distance.COSINE
 
 
 class QdrantCollection():
 
-    def __init__(self: Self) -> None:
+    def __init__(self: Self, vector_dimensions: int) -> None:
+        self.vectore_dimensions = vector_dimensions
         self.url = os.getenv('QDRANT_DB_URL')
         self.client = QdrantClient(url=self.url)
 
@@ -23,7 +23,7 @@ class QdrantCollection():
         self.client.create_collection(
             collection_name=name,
             vectors_config=VectorParams(
-                size=VECTOR_DIMENSIONS,
+                size=self.vectore_dimensions,
                 distance=VECTOR_DISTANCE
             )
         )

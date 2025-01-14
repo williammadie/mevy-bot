@@ -13,11 +13,12 @@ class QdrantEmbeddingConverter(ABC):
 
     def __init__(
         self: Self,
+        embedder: OpenAIEmbedder
     ) -> None:
-        self.embedding_model = OpenAIEmbedder()
+        self.embedder = embedder
 
     def get_embeddings_text_chunk(self: Self, text_chunk: str) -> PointStruct:
-        response = self.embedding_model.generate_embeddings(text_chunk)
+        response = self.embedder.generate_embeddings(text_chunk)
 
         point_embeddings = response.data[0].embedding
         point_id = str(uuid.uuid4())

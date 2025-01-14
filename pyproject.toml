@@ -19,6 +19,8 @@ pandas = "^2.2.3"
 langchain-ollama = "^0.2.2"
 pypdf2 = "^3.0.1"
 qdrant-client = "^1.12.2"
+transformers = "^4.48.0"
+semchunk = "^3.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.3.1"
