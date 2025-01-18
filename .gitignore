@@ -18,3 +18,8 @@ __pycache__/**
 
 # IDE
 .vscode
+
+## DeepEval
+.deepeval_telemtry.txt
+.deepeval-cache.json
+temp_test_run_data.json

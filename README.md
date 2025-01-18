@@ -1,6 +1,11 @@
 # Mevy Bot
 
-## Qdrant
+## Commands
+
+Run RAG tests
+```bash
+deepeval test run tests/retriever/test_retriever.py
+```
 
 Run Qdrant DB
 ```bash

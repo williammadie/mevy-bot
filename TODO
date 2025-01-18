@@ -1,20 +1,24 @@
-1. Implémenter une stratégie de découpage en chunk sans Langchain (trop de magie) (avec tiktoken ?)
-2. En se basant sur les nouveaux logs et découpage en chunks, comprendre pourquoi le cost predictor s'est trompé
-3. Regarder comment évaluer la performance de mon système RAG (Retrieval et Generation)
-de manière à commencer à comparer:
-- les différents modèles pour la génération (métriques généralistes ?)
-- les différents paramètres pour le retrieval (quelles métriques ?)
+1. Terminer d'ajouter le text hors-contexte
+2. Voir comment gérer plusieurs cas de tests. Peut-être vaut-il mieux utiliser l'approche DeepEval complètement ?
+3. Ajouter le nom de la source dans les ids des vecteurs dans les collections Qdrant de manière à pouvoir ajouter
+dynamiquement les sources de chaque document retrouvé. Il faudra ensuite penser à modifier les instructions du prompt
+pour indiquer la source en question.
 
-Points d'attention :
+Automatisation de la récupération des sources à jour
 
 Gestion des mises à jour de fichiers (à faire après avoir traiter les points 1 et 2)
     - Conserver les hashs des fichiers pour voir ceux qui sont mis à jour (data_store => file_storage + file_registry.json)
     - Formaliser les ids des vecteurs dans les collections Qdrant pour pouvoir suivre quel vecteur appartient à quel document
 
 
-Points non-urgents :
+Points non-prioritaires :
 
 - Reranker
 - System Railguards
     - Out-of-bound queries
     - 
+
+Problèmes connus :
+
+1. Problème de la citation de code d'articles référencés dans un autre code. Le chatbot mélange les numéros entre
+le code source et le code cité
