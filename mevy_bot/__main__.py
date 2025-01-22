@@ -38,11 +38,11 @@ logger.setLevel(logging.INFO)
 
 
 def main() -> None:
-    # source_inventory = SourceInventory()
+    source_inventory = SourceInventory()
 
-    # source_retriever = SourceRetriever(source_inventory)
-    # source_retriever.download_all()
-
+    source_retriever = SourceRetriever(source_inventory)
+    source_retriever.download_all()
+    """
     embedding_model_info = OpenAIModelFactory.text_embedding_3_small()
     generator_model_info = OpenAIModelFactory.gpt4o_mini()
 
@@ -70,6 +70,7 @@ def main() -> None:
     completion = generator.generate_response_with_context(
         rewrited_user_query, collection_name)
     print(completion)
+    """
 
 
 if __name__ == '__main__':
