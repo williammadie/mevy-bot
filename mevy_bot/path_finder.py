@@ -20,6 +20,14 @@ class PathFinder:
         return os.path.join(cls.project_path(), "data_storage")
 
     @classmethod
+    def data_storage_auto(cls) -> str:
+        return os.path.join(cls.data_storage(), "auto")
+
+    @classmethod
+    def data_storage_manual(cls) -> str:
+        return os.path.join(cls.data_storage(), "manual")
+
+    @classmethod
     def vector_store(cls) -> str:
         return os.path.join(cls.project_path(), "vector_store")
 

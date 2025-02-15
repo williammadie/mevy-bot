@@ -8,7 +8,6 @@ from qdrant_client.models import (
     ScoredPoint
 )
 
-from mevy_bot.exceptions.unsupported_file_type_error import UnsupportedFileTypeError
 from mevy_bot.path_finder import PathFinder
 from mevy_bot.file_reader import FileReader
 from mevy_bot.text_chunker import TextChunker
@@ -39,34 +38,29 @@ class VectorStore:
         self.embedding_converter = QdrantEmbeddingConverter(self.embedder)
         self.embedding_model = embedding_model
         self.chat_model = chat_model
-        self.ensure_directories_exist()
-
-    def ensure_directories_exist(self) -> None:
-        """ Create mandatory directories if missing """
-        os.makedirs(PathFinder.data_storage(), exist_ok=True)
 
     def build_from_data_storage_files(self: Self, collection_name: str) -> None:
         """ Build a vector store from PDF files in data_storage dir """
         l.info("Building vector store from data storage files...")
         storage_dir = PathFinder.data_storage()
-        l.info("%d files detected in storage.", len(os.listdir(storage_dir)))
-        for filename in os.listdir(storage_dir):
-            l.info("Processing %s...", filename)
-            if not filename.endswith('.pdf'):
-                raise UnsupportedFileTypeError(filename)
+        for root, _, files in os.walk(storage_dir):
+            for filename in files:
+                l.info("Processing %s...", filename)
+                filepath = os.path.join(root, filename)
 
-            filepath = os.path.join(storage_dir, filename)
-            text_chunker = TextChunker(self.embedding_model, self.chat_model)
-            text_chunks = text_chunker.chunks_from_document(
-                filepath,
-                self.CHUNK_SIZE,
-                self.CHUNK_OVERLAP
-            )
+                text_chunker = TextChunker(self.embedding_model, self.chat_model)
+                text_chunks = text_chunker.chunks_from_document(
+                    filepath,
+                    self.CHUNK_SIZE,
+                    self.CHUNK_OVERLAP
+                )
 
-            vectors = self.embedding_converter.get_embeddings_text_chunks(
-                text_chunks)
-            self.store_client.insert_vectors_in_collection(
-                vectors, collection_name)
+                vectors = self.embedding_converter.get_embeddings_text_chunks(
+                    text_chunks,
+                    filename
+                )
+                self.store_client.insert_vectors_in_collection(
+                    vectors, collection_name)
         l.info("Vector store successfully built.")
 
     def predict_costs_of_store_building(self: Self) -> None:
@@ -74,12 +68,9 @@ class VectorStore:
         total_cost = Decimal("0")
         total_chars, total_tokens, total_chunks = 0, 0, 0
         for filename in os.listdir(storage_dir):
-            if not filename.endswith('.pdf'):
-                raise UnsupportedFileTypeError(filename)
-
             filepath = os.path.join(storage_dir, filename)
             file_reader = FileReader()
-            file_text = file_reader.read_text_from_pdf(filepath)
+            file_text = file_reader.detect_format_and_read(filepath)
 
             token_calculator = TokenCalculator(self.chat_model)
             nb_tokens, nb_chars = token_calculator.nb_tokens_nb_chars(
@@ -106,11 +97,11 @@ class VectorStore:
             l.info("Embeddings generation for %s text chunks is expected to cost %f$ [%s]",
                    HumanNumber.format(len(text_chunks)), expected_cost, filename)
         l.info(
-            "Embeddings generation for %s tokens (%s characters) [total]",
+            "\n[TOTAL] Embeddings generation for %s tokens (%s characters) [total]",
             HumanNumber.format(total_tokens),
             HumanNumber.format(total_chars)
         )
-        l.info("Embeddings generation for %s text chunks is expected to cost %f$ [total]",
+        l.info("[TOTAL] Embeddings generation for %s text chunks is expected to cost %f$ [total]",
                HumanNumber.format(total_chunks), total_cost)
 
     def search_in_store(

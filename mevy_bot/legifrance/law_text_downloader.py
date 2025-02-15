@@ -21,7 +21,7 @@ class LawTextDownloader:
 
         filename = unidecode(code_name).lower().replace(" ", "_")
 
-        data_dir = PathFinder.data_storage()
+        data_dir = PathFinder.data_storage_auto()
         filepath = os.path.join(data_dir, f"{filename}.txt")
         with open(filepath, 'w', encoding='utf8') as f:
             f.write(code_content)

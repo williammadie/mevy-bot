@@ -20,7 +20,7 @@ class SourceRetriever:
     def download_all(self) -> None:
         """ Download all texts"""
         l.info("Downloading all external sources...")
-        storage_dir = PathFinder.data_storage()
+        manual_storage_dir =PathFinder.data_storage_manual()
         for source_id, source in self.si.inventory.items():
             l.info("Retrieving source %s", source.name)
             if source.mode == "manual":
@@ -29,7 +29,7 @@ class SourceRetriever:
                     continue
 
                 destination_file = os.path.join(
-                    storage_dir, f'{source_id.lower()}.pdf')
+                    manual_storage_dir, f'{source_id.lower()}.pdf')
                 response = requests.get(source.link, stream=True, timeout=60)
                 with open(destination_file, 'wb') as f:
                     f.write(response.content)
@@ -38,3 +38,9 @@ class SourceRetriever:
                 self.law_text_downloader.download_code(source.name)
 
         l.info("All sources have been retrieved")
+
+    def clear_data_store_auto(self) -> None:
+        auto_storage_dir = PathFinder.data_storage_auto()
+        for filename in os.listdir(auto_storage_dir):
+            filepath = os.path.join(auto_storage_dir, filename)
+            os.remove(filepath)

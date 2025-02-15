@@ -103,7 +103,7 @@ class TextChunker:
         overlap_fraction: float
     ) -> List[str]:
         file_reader = FileReader()
-        file_text = file_reader.read_text_from_pdf(filepath)
+        file_text = file_reader.detect_format_and_read(filepath)
 
         text_chunks = self.split_in_chunks_semchunk(
             file_text,
