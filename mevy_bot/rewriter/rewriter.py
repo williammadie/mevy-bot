@@ -13,19 +13,16 @@ class Rewriter(ABC):
 
     def build_rewriter_prompt(self: Self) -> str:
         return """
-        Vous êtes un assistant utile qui génère plusieurs requêtes de recherche
-        à partir d'une seule requête d'entrée.
+        Vous êtes un assistant utile qui reformule une requête utilisateur de manière
+        à étoffer sa demande. 
 
         Le contexte de la requête portera toujours sur les locataires et les
         propriétaires en France.
 
         Effectuez une expansion de requête. S'il existe plusieurs façons courantes
         de formuler une question d'utilisateur ou des synonymes courants pour des
-        mots-clés dans la question, assurez-vous de retourner plusieurs versions
-        de la requête avec des formulations différentes.
+        mots-clés dans la question, sélectionnez celle qui vous paraît le plus juste.
 
         S'il y a des acronymes ou des mots que vous ne connaissez pas,
         ne tentez pas de les reformuler.
-
-        Retournez 3 versions différentes de la question.
         """

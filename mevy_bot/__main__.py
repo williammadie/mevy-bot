@@ -49,6 +49,7 @@ def do_embed(args) -> None:
         args.predict_only
     )
 
+
 def do_collect(args) -> None:
     collect()
 
@@ -83,40 +84,50 @@ def embed(
         generator_model_info
     )
     vector_store.predict_costs_of_store_building()
-    
+
     if not predict_only:
         vector_store.build_from_data_storage_files(collection_name)
 
 
+def do_chat(args) -> None:
+    chat()
+
+
 def chat() -> None:
     logger.info("Starting chat operation...")
-    user_query = "L'Etat a-t-il le droit d'exproprier un propriétaire ?"
+    while True:
+        user_query = input("Pose your question: ")
 
-    embedding_model_info = OpenAIModelFactory.text_embedding_3_small()
-    generator_model_info = OpenAIModelFactory.gpt4o_mini()
+        embedding_model_info = OpenAIModelFactory.text_embedding_3_small()
+        generator_model_info = OpenAIModelFactory.gpt4o_mini()
 
-    store_client = QdrantCollection(embedding_model_info.vector_dimensions)
-    vector_store = VectorStore(
-        store_client,
-        embedding_model_info,
-        generator_model_info
-    )
-    collection_name = "mevy-bot-1024_0.2"
+        store_client = QdrantCollection(embedding_model_info.vector_dimensions)
+        vector_store = VectorStore(
+            store_client,
+            embedding_model_info,
+            generator_model_info
+        )
+        collection_name = "full_knowledge_test_19022025"
 
-    rewriter = OpenAIRewriter(generator_model_info.name)
-    rewrited_user_query = rewriter.rewrite_user_query(user_query)
-    logger.info(rewrited_user_query)
+        rewriter = OpenAIRewriter(generator_model_info.name)
+        rewrited_user_query = rewriter.rewrite_user_query(user_query)
+        logger.info("""User query:
+            %s
 
-    res = vector_store.search_in_store(
-        user_query,
-        collection_name
-    )
-    logger.info(res)
+            Rewrited query:
 
-    generator = OpenAIGenerator(generator_model_info, vector_store)
-    completion = generator.generate_response_with_context(
-        rewrited_user_query, collection_name)
-    print(completion)
+            %s
+            """,
+                    user_query,
+                    rewrited_user_query)
+
+        context = vector_store.search_in_store(rewrited_user_query, collection_name)
+        logger.info("Context:\n\n%s", context)
+
+        generator = OpenAIGenerator(generator_model_info, vector_store)
+        completion = generator.generate_response_with_context(
+            rewrited_user_query, collection_name)
+        print(completion)
 
 ########################################### CLI Settings Section ###########################################
 
@@ -148,7 +159,7 @@ embed_parser.add_argument(
 embed_parser.set_defaults(func=do_embed)
 
 chat_parser = subparsers.add_parser('chat', help="ask a question to mevy bot")
-chat_parser.set_defaults(func=chat)
+chat_parser.set_defaults(func=do_chat)
 
 
 if __name__ == '__main__':

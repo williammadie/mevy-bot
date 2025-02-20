@@ -1,12 +1,14 @@
+import logging
 from typing import Self, List
 
 from qdrant_client.models import ScoredPoint
-from openai import OpenAI
 
 from mevy_bot.generator.generator import Generator
 from mevy_bot.models.openai import ChatModel
 from mevy_bot.vector_store.vector_store import VectorStore
 from mevy_bot.gateways.openai_gateway import OpenAIGateway
+
+l = logging.getLogger(__name__)
 
 
 class OpenAIGenerator(Generator):
@@ -31,13 +33,19 @@ class OpenAIGenerator(Generator):
     def refine_retrieved_context(self: Self, documents: List[ScoredPoint]) -> str:
         context = ""
         for doc in documents:
-            if doc.payload is not None:
+            if doc.payload is not None and doc.score > 0.6:
                 doc_content = doc.payload.get('text')
                 context += f'{doc_content}\n\n'
 
+        if not context:
+            context = "Aucune information du contexte en permet de répondre à cette demande."
+
         return context
 
-    def list_documents_from_retrieved_context(self: Self, retrieved_documents: List[ScoredPoint]) -> List[str]:
+    def list_documents_from_retrieved_context(
+        self: Self,
+        retrieved_documents: List[ScoredPoint]
+    ) -> List[str]:
         docs = []
         for doc in retrieved_documents:
             if doc.payload is not None:

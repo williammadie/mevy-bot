@@ -48,7 +48,8 @@ class VectorStore:
                 l.info("Processing %s...", filename)
                 filepath = os.path.join(root, filename)
 
-                text_chunker = TextChunker(self.embedding_model, self.chat_model)
+                text_chunker = TextChunker(
+                    self.embedding_model, self.chat_model)
                 text_chunks = text_chunker.chunks_from_document(
                     filepath,
                     self.CHUNK_SIZE,
@@ -67,42 +68,44 @@ class VectorStore:
         storage_dir = PathFinder.data_storage()
         total_cost = Decimal("0")
         total_chars, total_tokens, total_chunks = 0, 0, 0
-        for filename in os.listdir(storage_dir):
-            filepath = os.path.join(storage_dir, filename)
-            file_reader = FileReader()
-            file_text = file_reader.detect_format_and_read(filepath)
+        for root, _, files in os.walk(storage_dir):
+            for filename in files:
+                filepath = os.path.join(root, filename)
+                file_reader = FileReader()
+                file_text = file_reader.detect_format_and_read(filepath)
 
-            token_calculator = TokenCalculator(self.chat_model)
-            nb_tokens, nb_chars = token_calculator.nb_tokens_nb_chars(
-                file_text)
-            total_tokens += nb_tokens
-            total_chars += nb_chars
+                token_calculator = TokenCalculator(self.chat_model)
+                nb_tokens, nb_chars = token_calculator.nb_tokens_nb_chars(
+                    file_text)
+                total_tokens += nb_tokens
+                total_chars += nb_chars
+                l.info(
+                    "Embeddings generation for %s tokens (%s characters) [%s]",
+                    HumanNumber.format(nb_tokens),
+                    HumanNumber.format(nb_chars),
+                    filename
+                )
+
+                text_chunker = TextChunker(
+                    self.embedding_model, self.chat_model)
+                text_chunks = text_chunker.split_in_chunks_semchunk(
+                    file_text, self.CHUNK_SIZE, self.CHUNK_OVERLAP)
+                total_chunks += len(text_chunks)
+
+                cost_predictor = CostPredictor(
+                    self.embedding_model.price_per_1k_input_tokens)
+                expected_cost = cost_predictor.calculate_cost_based_on_token_count(
+                    Decimal(nb_tokens))
+                total_cost += expected_cost
+                l.info("Embeddings generation for %s text chunks is expected to cost %f$ [%s]",
+                       HumanNumber.format(len(text_chunks)), expected_cost, filename)
             l.info(
-                "Embeddings generation for %s tokens (%s characters) [%s]",
-                HumanNumber.format(nb_tokens),
-                HumanNumber.format(nb_chars),
-                filename
+                "\n[TOTAL] Embeddings generation for %s tokens (%s characters) [total]",
+                HumanNumber.format(total_tokens),
+                HumanNumber.format(total_chars)
             )
-
-            text_chunker = TextChunker(self.embedding_model, self.chat_model)
-            text_chunks = text_chunker.split_in_chunks_semchunk(
-                file_text, self.CHUNK_SIZE, self.CHUNK_OVERLAP)
-            total_chunks += len(text_chunks)
-
-            cost_predictor = CostPredictor(
-                self.embedding_model.price_per_1k_input_tokens)
-            expected_cost = cost_predictor.calculate_cost_based_on_token_count(
-                Decimal(nb_tokens))
-            total_cost += expected_cost
-            l.info("Embeddings generation for %s text chunks is expected to cost %f$ [%s]",
-                   HumanNumber.format(len(text_chunks)), expected_cost, filename)
-        l.info(
-            "\n[TOTAL] Embeddings generation for %s tokens (%s characters) [total]",
-            HumanNumber.format(total_tokens),
-            HumanNumber.format(total_chars)
-        )
-        l.info("[TOTAL] Embeddings generation for %s text chunks is expected to cost %f$ [total]",
-               HumanNumber.format(total_chunks), total_cost)
+            l.info("[TOTAL] Embeddings generation for %s text chunks is expected to cost %f$ [total]",
+                   HumanNumber.format(total_chunks), total_cost)
 
     def search_in_store(
         self: Self,

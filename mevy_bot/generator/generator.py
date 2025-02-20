@@ -33,10 +33,14 @@ class Generator(ABC):
         demande.
         
         Si vous n'êtes pas en mesure de répondre uniquement à partir du informations
-        fournies, vous ne devez surtout pas répondre.
+        fournies, vous ne devez pas répondre.
+        
+        Si vous êtes en mesure de proposer un début d'élément de réponse, mais que vous
+        jugez votre réponse trop peu fournie, répondez en indiquant de contacter un
+        opérateur Mevy pour compléter la demande.
                 
         Lorsque vous répondez, indiquez les numéros, noms et dates des lois ou sources utilisées
-        pour assurer la transparence, la précision et la fiabilité des informations fournies.
+        pour assurer la transparence, la précision et la fiabilité des informations de ton contexte.
         """
 
     def build_user_prompt(self: Self, question: str, context: str) -> str:
