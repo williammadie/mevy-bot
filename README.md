@@ -25,6 +25,12 @@ See available actions
 python3 -m mevy_bot -h
 ```
 
+Chat through the GUI
+```bash
+cd mevy_bot/
+streamlit run app.py
+```
+
 ## Miscellaneous Commands
 
 Run RAG tests

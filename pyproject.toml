@@ -1,38 +1,45 @@
-[tool.poetry]
+[tool.pdm.build]
+includes = []
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[project]
+authors = [
+    {name = "williammadie", email = "william.madie0@gmail.com"},
+]
+requires-python = "<3.13,>=3.11"
+dependencies = [
+    "langchain<1.0.0,>=0.3.2",
+    "python-dotenv<2.0.0,>=1.0.1",
+    "langchain-community<1.0.0,>=0.3.1",
+    "openai<2.0.0,>=1.51.2",
+    "pypdf<6.0.0,>=5.0.1",
+    "tiktoken<1.0.0,>=0.8.0",
+    "langchain-openai<1.0.0,>=0.2.2",
+    "pandas<3.0.0,>=2.2.3",
+    "langchain-ollama<1.0.0,>=0.2.2",
+    "pypdf2<4.0.0,>=3.0.1",
+    "qdrant-client<2.0.0,>=1.12.2",
+    "semchunk<4.0.0,>=3.0.1",
+    "deepeval<3.0.0,>=2.1.8",
+    "pylegifrance @ git+https://github.com/rdassignies/pylegifrance",
+    "pydantic<3.0.0,>=2.10.5",
+    "lxml<6.0.0,>=5.3.0",
+    "unidecode<2.0.0,>=1.3.8",
+    "streamlit>=1.42.2",
+]
 name = "mevy-bot"
 version = "0.1.0"
 description = ""
-authors = ["williammadie <william.madie0@gmail.com>"]
 readme = "README.md"
 
-[tool.poetry.dependencies]
-python = ">=3.11,<3.13"
-langchain = "^0.3.2"
-python-dotenv = "^1.0.1"
-langchain-community = "^0.3.1"
-openai = "^1.51.2"
-pypdf = "^5.0.1"
-tiktoken = "^0.8.0"
-langchain-openai = "^0.2.2"
-pandas = "^2.2.3"
-langchain-ollama = "^0.2.2"
-pypdf2 = "^3.0.1"
-qdrant-client = "^1.12.2"
-semchunk = "^3.0.1"
-deepeval = "^2.1.8"
-pylegifrance = {git = "https://github.com/rdassignies/pylegifrance"}
-pydantic = "^2.10.5"
-lxml = "^5.3.0"
-unidecode = "^1.3.8"
-
-[tool.poetry.group.dev.dependencies]
-pylint = "^3.3.1"
-autopep8 = "^2.3.1"
-
-
-[tool.poetry.group.test.dependencies]
-pytest = "^8.3.4"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"
+[dependency-groups]
+dev = [
+    "pylint<4.0.0,>=3.3.1",
+    "autopep8<3.0.0,>=2.3.1",
+]
+test = [
+    "pytest<9.0.0,>=8.3.4",
+]
