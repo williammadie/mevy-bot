@@ -315,13 +315,13 @@
     {
       "parameters": {
         "method": "POST",
-        "url": "http://localhost:8000/code",
+        "url": "http://legifrance_service:8000/code",
         "sendBody": true,
         "bodyParameters": {
           "parameters": [
             {
               "name": "name",
-              "value": "Code civil"
+              "value": "={{ $json.codes }}"
             }
           ]
         },
@@ -330,11 +330,145 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        200,
-        -520
+        1120,
+        -620
       ],
       "id": "1f92eb18-c4c3-4988-8bda-69a4eb357f9e",
       "name": "HTTP Request"
+    },
+    {
+      "parameters": {
+        "mode": "raw",
+        "jsonOutput": "{\n    \"codes\": [\n        \"Code civil\",\n        \"Code de la construction et de l'habitation\",\n        \"Code de la consommation\",\n        \"Code des assurances\",\n        \"Code de commerce\",\n        \"Code des communes\",\n        \"Code de la consommation\",\n        \"Code de déontologie des architectes\",\n        \"Code de l'énergie\",\n        \"Code de l'environnement\",\n        \"Code de l'expropriation pour cause d'utilité publique\",\n        \"Code de la famille et de l'aide sociale\",\n        \"Code forestier (nouveau)\",\n        \"Code général des impôts\",\n        \"Code général des impôts, annexe I\",\n        \"Code général des impôts, annexe II\",\n        \"Code général des impôts, annexe III\",\n        \"Code général des impôts, annexe IV\",\n        \"Code des impositions sur les biens et services\",\n        \"Code des juridictions financières\",\n        \"Code de justice administrative\",\n        \"Livre des procédures fiscales\",\n        \"Code monétaire et financier\",\n        \"Code du patrimoine\",\n        \"Code de procédure civile\",\n        \"Code de procédure pénale\",\n        \"Code de l'urbanisme\",\n        \"Code de la sécurité sociale\"\n    ]\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        420,
+        -620
+      ],
+      "id": "7d3750b2-b55c-492e-9c8c-5c9497fcb715",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "codes",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        640,
+        -620
+      ],
+      "id": "db83d6dd-7aaa-4bcd-af86-7fd2be980d33",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        860,
+        -620
+      ],
+      "id": "86f8be90-bfc7-4c36-a8f9-235b07973f6e",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "mevy_chatbot_knowledge",
+          "mode": "id"
+        },
+        "options": {
+          "collectionConfig": ""
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        1340,
+        -960
+      ],
+      "id": "e891c155-731c-4e77-8af2-0b1cc4a93bc8",
+      "name": "Qdrant Vector Store1",
+      "credentials": {
+        "qdrantApi": {
+          "id": "IXI1E3FQtY27BjHl",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        1420,
+        -660
+      ],
+      "id": "4c23ad18-6db1-4078-a3f4-d4e1e1c839a9",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "0WdBVL9N6i2ZEW56",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsonMode": "expressionData",
+        "jsonData": "={{ $json.content }}",
+        "options": {
+          "metadata": {
+            "metadataValues": [
+              {
+                "name": "source",
+                "value": "{{ $json.code }}"
+              }
+            ]
+          }
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        -560
+      ],
+      "id": "a369577c-b534-4f00-9a00-7bda57c098c2",
+      "name": "Default Data Loader1"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.textSplitterTokenSplitter",
+      "typeVersion": 1,
+      "position": [
+        1640,
+        -380
+      ],
+      "id": "cce9fd4c-8020-40d9-82c5-75e6deb3e311",
+      "name": "Token Splitter"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        940,
+        -1020
+      ],
+      "id": "53773423-1d0d-499d-9557-193c42de180c",
+      "name": "Limit"
     }
   ],
   "pinData": {},
@@ -460,7 +594,107 @@
       "main": [
         [
           {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [],
+        [
+          {
             "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store1": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader1": {
+      "ai_document": [
+        [
+          {
+            "node": "Qdrant Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Token Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -472,7 +706,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "e1a0631f-45cb-4aa8-84e6-07fd04a68bdb",
+  "versionId": "8c52dbbf-05e8-45ae-a8d0-c0b9ba09870a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4d4c2a67139cff11684e1a9390cf71fd8c932f80dd47f076f9f0a1692282c479"
