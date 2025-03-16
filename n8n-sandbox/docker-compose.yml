@@ -42,6 +42,14 @@ services:
       - mevy-chatbot-network
     volumes:
       - qdrant-data:/qdrant/storage
+    
+  legifrance-service:
+    container_name: legifrance_service
+    build: ..
+    ports:
+      - '8000:8000'
+    networks:
+    - mevy-chatbot-network
 
 volumes:
   db-data:

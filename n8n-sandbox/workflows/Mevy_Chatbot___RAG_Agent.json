@@ -1,0 +1,189 @@
+{
+  "name": "Mevy Chatbot - RAG Agent",
+  "nodes": [
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "2d68678d-efc5-45e9-8f34-c553dd30f60d",
+      "name": "When chat message received",
+      "webhookId": "69cf561f-027c-4a45-8d91-1497a3200e6d"
+    },
+    {
+      "parameters": {
+        "options": {
+          "systemPromptTemplate": "Vous êtes un spécialiste des questions juridique et fiscale en France.\n        \nVotre objectif est de répondre aux questions de propriétaires bailleurs\nen France en vous basant uniquement sur le contexte fourni lors de la\ndemande.\n        \nSi vous n'êtes pas en mesure de répondre uniquement à partir du informations\nfournies, vous ne devez pas répondre.\n        \nSi vous êtes en mesure de proposer un début d'élément de réponse, mais que vous\njugez votre réponse trop peu fournie, répondez en indiquant de contacter un\nopérateur Mevy pour compléter la demande.\n                \nLorsque vous répondez, indiquez les numéros, noms et dates des lois ou sources utilisées\npour assurer la transparence, la précision et la fiabilité des informations de ton contexte.\n----------------\n{context}"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainRetrievalQa",
+      "typeVersion": 1.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "736f949b-57de-4b5b-9356-cb28d4013fdd",
+      "name": "Question and Answer Chain"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4o-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        120,
+        240
+      ],
+      "id": "0f549905-629a-4baf-befc-f5d633219bd1",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "0WdBVL9N6i2ZEW56",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.retrieverVectorStore",
+      "typeVersion": 1,
+      "position": [
+        240,
+        220
+      ],
+      "id": "7addd15d-09f1-43fc-b734-6f74d545868a",
+      "name": "Vector Store Retriever"
+    },
+    {
+      "parameters": {
+        "qdrantCollection": {
+          "__rl": true,
+          "value": "mevy_chatbot_knowledge",
+          "mode": "list",
+          "cachedResultName": "mevy_chatbot_knowledge"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
+      "typeVersion": 1,
+      "position": [
+        280,
+        380
+      ],
+      "id": "c68056e4-fe9b-49be-8116-1779f931789f",
+      "name": "Qdrant Vector Store",
+      "credentials": {
+        "qdrantApi": {
+          "id": "IXI1E3FQtY27BjHl",
+          "name": "QdrantApi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        240,
+        520
+      ],
+      "id": "28874359-52b6-41e4-8224-2ff6045e7113",
+      "name": "Embeddings OpenAI",
+      "credentials": {
+        "openAiApi": {
+          "id": "0WdBVL9N6i2ZEW56",
+          "name": "OpenAi account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When chat message received": {
+      "main": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Retriever": {
+      "ai_retriever": [
+        [
+          {
+            "node": "Question and Answer Chain",
+            "type": "ai_retriever",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Qdrant Vector Store": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Retriever",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Qdrant Vector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "437994dd-ece7-41a0-a671-31d4632bc58e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "4d4c2a67139cff11684e1a9390cf71fd8c932f80dd47f076f9f0a1692282c479"
+  },
+  "id": "4pRtmfqX7HxLl7lz",
+  "tags": [
+    {
+      "createdAt": "2025-03-06T06:06:31.989Z",
+      "updatedAt": "2025-03-06T06:06:31.989Z",
+      "id": "G4hLVYpNyPdaUuPy",
+      "name": "chat"
+    }
+  ]
+}

@@ -14,10 +14,13 @@ load_dotenv()
 
 class LawTextDownloader:
 
-    def download_code(self: Self, code_name: str) -> None:
+    def fetch_code(self: Self, code_name: str) -> str:
         results = recherche_CODE(code_name=code_name)
         code = Code.model_validate(results[0])
-        code_content = self.build_code(code)
+        return self.build_code(code)
+
+    def download_code(self: Self, code_name: str) -> None:
+        code_content = self.fetch_code(code_name=code_name)
 
         filename = unidecode(code_name).lower().replace(" ", "_")
 
