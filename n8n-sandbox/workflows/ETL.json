@@ -330,8 +330,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
       "position": [
-        1120,
-        -620
+        1220,
+        -540
       ],
       "id": "1f92eb18-c4c3-4988-8bda-69a4eb357f9e",
       "name": "HTTP Request"
@@ -433,7 +433,7 @@
             "metadataValues": [
               {
                 "name": "source",
-                "value": "{{ $json.code }}"
+                "value": "={{ $json.code }}"
               }
             ]
           }
@@ -449,26 +449,30 @@
       "name": "Default Data Loader1"
     },
     {
-      "parameters": {},
-      "type": "@n8n/n8n-nodes-langchain.textSplitterTokenSplitter",
-      "typeVersion": 1,
-      "position": [
-        1640,
-        -380
-      ],
-      "id": "cce9fd4c-8020-40d9-82c5-75e6deb3e311",
-      "name": "Token Splitter"
-    },
-    {
-      "parameters": {},
+      "parameters": {
+        "keep": "lastItems"
+      },
       "type": "n8n-nodes-base.limit",
       "typeVersion": 1,
       "position": [
-        940,
-        -1020
+        1040,
+        -540
       ],
-      "id": "53773423-1d0d-499d-9557-193c42de180c",
+      "id": "8b6f20b7-49a7-4249-bbd7-ea248ec4c918",
       "name": "Limit"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        1720,
+        -340
+      ],
+      "id": "882c9924-a0fb-4fb8-a570-830a0ee27589",
+      "name": "Recursive Character Text Splitter1"
     }
   ],
   "pinData": {},
@@ -628,7 +632,7 @@
         [],
         [
           {
-            "node": "HTTP Request",
+            "node": "Limit",
             "type": "main",
             "index": 0
           }
@@ -661,7 +665,7 @@
       "main": [
         [
           {
-            "node": "Limit",
+            "node": "Loop Over Items",
             "type": "main",
             "index": 0
           }
@@ -679,23 +683,23 @@
         ]
       ]
     },
-    "Token Splitter": {
-      "ai_textSplitter": [
+    "Limit": {
+      "main": [
         [
           {
-            "node": "Default Data Loader1",
-            "type": "ai_textSplitter",
+            "node": "HTTP Request",
+            "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Limit": {
-      "main": [
+    "Recursive Character Text Splitter1": {
+      "ai_textSplitter": [
         [
           {
-            "node": "Loop Over Items",
-            "type": "main",
+            "node": "Default Data Loader1",
+            "type": "ai_textSplitter",
             "index": 0
           }
         ]
@@ -706,7 +710,7 @@
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "8c52dbbf-05e8-45ae-a8d0-c0b9ba09870a",
+  "versionId": "90219801-016b-4a61-b3d4-9c9cc930428a",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4d4c2a67139cff11684e1a9390cf71fd8c932f80dd47f076f9f0a1692282c479"
