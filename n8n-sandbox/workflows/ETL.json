@@ -339,7 +339,7 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "{\n    \"codes\": [\n        \"Code civil\",\n        \"Code de la construction et de l'habitation\",\n        \"Code de la consommation\",\n        \"Code des assurances\",\n        \"Code de commerce\",\n        \"Code des communes\",\n        \"Code de la consommation\",\n        \"Code de déontologie des architectes\",\n        \"Code de l'énergie\",\n        \"Code de l'environnement\",\n        \"Code de l'expropriation pour cause d'utilité publique\",\n        \"Code de la famille et de l'aide sociale\",\n        \"Code forestier (nouveau)\",\n        \"Code général des impôts\",\n        \"Code général des impôts, annexe I\",\n        \"Code général des impôts, annexe II\",\n        \"Code général des impôts, annexe III\",\n        \"Code général des impôts, annexe IV\",\n        \"Code des impositions sur les biens et services\",\n        \"Code des juridictions financières\",\n        \"Code de justice administrative\",\n        \"Livre des procédures fiscales\",\n        \"Code monétaire et financier\",\n        \"Code du patrimoine\",\n        \"Code de procédure civile\",\n        \"Code de procédure pénale\",\n        \"Code de l'urbanisme\",\n        \"Code de la sécurité sociale\"\n    ]\n}",
+        "jsonOutput": "{\n    \"codes\": [\n        \"Code des assurances\",\n        \"Code civil\",\n        \"Code de la construction et de l'habitation\",\n        \"Code de la consommation\",\n        \"Code des assurances\",\n        \"Code de commerce\",\n        \"Code des communes\",\n        \"Code de la consommation\",\n        \"Code de déontologie des architectes\",\n        \"Code de l'énergie\",\n        \"Code de l'environnement\",\n        \"Code de l'expropriation pour cause d'utilité publique\",\n        \"Code de la famille et de l'aide sociale\",\n        \"Code forestier (nouveau)\",\n        \"Code général des impôts\",\n        \"Code général des impôts, annexe I\",\n        \"Code général des impôts, annexe II\",\n        \"Code général des impôts, annexe III\",\n        \"Code général des impôts, annexe IV\",\n        \"Code des impositions sur les biens et services\",\n        \"Code des juridictions financières\",\n        \"Code de justice administrative\",\n        \"Livre des procédures fiscales\",\n        \"Code monétaire et financier\",\n        \"Code du patrimoine\",\n        \"Code de procédure civile\",\n        \"Code de procédure pénale\",\n        \"Code de l'urbanisme\",\n        \"Code de la sécurité sociale\"\n    ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
@@ -393,8 +393,8 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
       "typeVersion": 1,
       "position": [
-        1340,
-        -960
+        1240,
+        -1000
       ],
       "id": "e891c155-731c-4e77-8af2-0b1cc4a93bc8",
       "name": "Qdrant Vector Store1",
@@ -412,8 +412,8 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        1420,
-        -660
+        1020,
+        -940
       ],
       "id": "4c23ad18-6db1-4078-a3f4-d4e1e1c839a9",
       "name": "Embeddings OpenAI",
@@ -473,6 +473,46 @@
       ],
       "id": "882c9924-a0fb-4fb8-a570-830a0ee27589",
       "name": "Recursive Character Text Splitter1"
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "tableName": "mevy_chatbot",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
+      "typeVersion": 1,
+      "position": [
+        2140,
+        -900
+      ],
+      "id": "6734959c-5e5f-4e62-b74d-95906228def3",
+      "name": "Postgres PGVector Store",
+      "credentials": {
+        "postgres": {
+          "id": "qoRYdwJUjGbnT5WF",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.2,
+      "position": [
+        2080,
+        -660
+      ],
+      "id": "10828963-3fe3-4409-aeaa-237fa1e65096",
+      "name": "Embeddings OpenAI2",
+      "credentials": {
+        "openAiApi": {
+          "id": "0WdBVL9N6i2ZEW56",
+          "name": "OpenAi account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -654,7 +694,7 @@
       "main": [
         [
           {
-            "node": "Qdrant Vector Store1",
+            "node": "Postgres PGVector Store",
             "type": "main",
             "index": 0
           }
@@ -663,13 +703,7 @@
     },
     "Qdrant Vector Store1": {
       "main": [
-        [
-          {
-            "node": "Loop Over Items",
-            "type": "main",
-            "index": 0
-          }
-        ]
+        []
       ]
     },
     "Default Data Loader1": {
@@ -677,6 +711,11 @@
         [
           {
             "node": "Qdrant Vector Store1",
+            "type": "ai_document",
+            "index": 0
+          },
+          {
+            "node": "Postgres PGVector Store",
             "type": "ai_document",
             "index": 0
           }
@@ -704,13 +743,35 @@
           }
         ]
       ]
+    },
+    "Embeddings OpenAI2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Postgres PGVector Store": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "90219801-016b-4a61-b3d4-9c9cc930428a",
+  "versionId": "57b3ad2b-8e8d-4153-adc9-88143c5875d3",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "4d4c2a67139cff11684e1a9390cf71fd8c932f80dd47f076f9f0a1692282c479"

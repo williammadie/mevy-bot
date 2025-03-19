@@ -36,7 +36,7 @@ class LawTextDownloader:
         return code_content
 
     def build_section(self: Self, section: Section) -> str:
-        section_content = f"{section.title}\n\n\n"
+        section_content = f"{section.title}\n\n"
         for article in sorted(section.articles, key=lambda x: x.intOrdre):
             section_content += f"Article n°{article.num}\n"
             html_tree = fromstring(article.content)

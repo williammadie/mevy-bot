@@ -43,6 +43,21 @@ services:
     volumes:
       - qdrant-data:/qdrant/storage
     
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: pgvector-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: mevy_bot
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - mevy-chatbot-network
+
+    
   legifrance-service:
     container_name: legifrance_service
     build: ..
@@ -54,6 +69,7 @@ services:
 volumes:
   db-data:
   qdrant-data:
+  pgdata:
 
 networks:
   mevy-chatbot-network:
