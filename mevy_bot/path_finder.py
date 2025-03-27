@@ -10,6 +10,10 @@ class PathFinder:
     @classmethod
     def project_path(cls) -> str:
         return os.path.dirname(cls.package_path())
+    
+    @classmethod
+    def secrets(cls) -> str:
+        return os.path.join(cls.project_path(), "secrets")
 
     @classmethod
     def data_definition(cls) -> str:
@@ -26,10 +30,6 @@ class PathFinder:
     @classmethod
     def data_storage_manual(cls) -> str:
         return os.path.join(cls.data_storage(), "manual")
-
-    @classmethod
-    def vector_store(cls) -> str:
-        return os.path.join(cls.project_path(), "vector_store")
 
     @classmethod
     def log_dirpath(cls) -> str:

@@ -252,7 +252,7 @@
       "name": "Embeddings OpenAI1",
       "credentials": {
         "openAiApi": {
-          "id": "0WdBVL9N6i2ZEW56",
+          "id": "6A8Q0bLM3MI9UvVQ",
           "name": "OpenAi account"
         }
       }
@@ -306,8 +306,8 @@
       "type": "n8n-nodes-base.manualTrigger",
       "typeVersion": 1,
       "position": [
-        -20,
-        -520
+        20,
+        -620
       ],
       "id": "bcf2eef7-9771-4b59-9eb8-24891c41926d",
       "name": "When clicking ‘Test workflow’"
@@ -325,7 +325,13 @@
             }
           ]
         },
-        "options": {}
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "file"
+            }
+          }
+        }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.2,
@@ -339,7 +345,7 @@
     {
       "parameters": {
         "mode": "raw",
-        "jsonOutput": "{\n    \"codes\": [\n        \"Code des assurances\",\n        \"Code civil\",\n        \"Code de la construction et de l'habitation\",\n        \"Code de la consommation\",\n        \"Code des assurances\",\n        \"Code de commerce\",\n        \"Code des communes\",\n        \"Code de la consommation\",\n        \"Code de déontologie des architectes\",\n        \"Code de l'énergie\",\n        \"Code de l'environnement\",\n        \"Code de l'expropriation pour cause d'utilité publique\",\n        \"Code de la famille et de l'aide sociale\",\n        \"Code forestier (nouveau)\",\n        \"Code général des impôts\",\n        \"Code général des impôts, annexe I\",\n        \"Code général des impôts, annexe II\",\n        \"Code général des impôts, annexe III\",\n        \"Code général des impôts, annexe IV\",\n        \"Code des impositions sur les biens et services\",\n        \"Code des juridictions financières\",\n        \"Code de justice administrative\",\n        \"Livre des procédures fiscales\",\n        \"Code monétaire et financier\",\n        \"Code du patrimoine\",\n        \"Code de procédure civile\",\n        \"Code de procédure pénale\",\n        \"Code de l'urbanisme\",\n        \"Code de la sécurité sociale\"\n    ]\n}",
+        "jsonOutput": "{\n    \"codes\": [\n        \"Code des assurances\",\n        \"Code civil\",\n        \"Code de la construction et de l'habitation\",\n        \"Code de la consommation\",\n        \"Code de commerce\",\n        \"Code des communes\",\n        \"Code de la consommation\",\n        \"Code de déontologie des architectes\",\n        \"Code de l'énergie\",\n        \"Code de l'environnement\",\n        \"Code de l'expropriation pour cause d'utilité publique\",\n        \"Code de la famille et de l'aide sociale\",\n        \"Code forestier (nouveau)\",\n        \"Code général des impôts\",\n        \"Code général des impôts, annexe I\",\n        \"Code général des impôts, annexe II\",\n        \"Code général des impôts, annexe III\",\n        \"Code général des impôts, annexe IV\",\n        \"Code des impositions sur les biens et services\",\n        \"Code des juridictions financières\",\n        \"Code de justice administrative\",\n        \"Livre des procédures fiscales\",\n        \"Code monétaire et financier\",\n        \"Code du patrimoine\",\n        \"Code de procédure civile\",\n        \"Code de procédure pénale\",\n        \"Code de l'urbanisme\",\n        \"Code de la sécurité sociale\"\n    ]\n}",
         "options": {}
       },
       "type": "n8n-nodes-base.set",
@@ -380,54 +386,8 @@
     },
     {
       "parameters": {
-        "mode": "insert",
-        "qdrantCollection": {
-          "__rl": true,
-          "value": "mevy_chatbot_knowledge",
-          "mode": "id"
-        },
-        "options": {
-          "collectionConfig": ""
-        }
-      },
-      "type": "@n8n/n8n-nodes-langchain.vectorStoreQdrant",
-      "typeVersion": 1,
-      "position": [
-        1240,
-        -1000
-      ],
-      "id": "e891c155-731c-4e77-8af2-0b1cc4a93bc8",
-      "name": "Qdrant Vector Store1",
-      "credentials": {
-        "qdrantApi": {
-          "id": "IXI1E3FQtY27BjHl",
-          "name": "QdrantApi account"
-        }
-      }
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.2,
-      "position": [
-        1020,
-        -940
-      ],
-      "id": "4c23ad18-6db1-4078-a3f4-d4e1e1c839a9",
-      "name": "Embeddings OpenAI",
-      "credentials": {
-        "openAiApi": {
-          "id": "0WdBVL9N6i2ZEW56",
-          "name": "OpenAi account"
-        }
-      }
-    },
-    {
-      "parameters": {
         "jsonMode": "expressionData",
-        "jsonData": "={{ $json.content }}",
+        "jsonData": "={{ $json.data }}",
         "options": {
           "metadata": {
             "metadataValues": [
@@ -442,8 +402,8 @@
       "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
       "typeVersion": 1,
       "position": [
-        1620,
-        -560
+        1800,
+        -640
       ],
       "id": "a369577c-b534-4f00-9a00-7bda57c098c2",
       "name": "Default Data Loader1"
@@ -468,8 +428,8 @@
       "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
       "typeVersion": 1,
       "position": [
-        1720,
-        -340
+        1860,
+        -480
       ],
       "id": "882c9924-a0fb-4fb8-a570-830a0ee27589",
       "name": "Recursive Character Text Splitter1"
@@ -483,14 +443,14 @@
       "type": "@n8n/n8n-nodes-langchain.vectorStorePGVector",
       "typeVersion": 1,
       "position": [
-        2140,
-        -900
+        1620,
+        -880
       ],
       "id": "6734959c-5e5f-4e62-b74d-95906228def3",
       "name": "Postgres PGVector Store",
       "credentials": {
         "postgres": {
-          "id": "qoRYdwJUjGbnT5WF",
+          "id": "6a69WAhOinNYcjHH",
           "name": "Postgres account"
         }
       }
@@ -502,17 +462,69 @@
       "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
       "typeVersion": 1.2,
       "position": [
-        2080,
-        -660
+        1680,
+        -640
       ],
       "id": "10828963-3fe3-4409-aeaa-237fa1e65096",
       "name": "Embeddings OpenAI2",
       "credentials": {
         "openAiApi": {
-          "id": "0WdBVL9N6i2ZEW56",
+          "id": "6A8Q0bLM3MI9UvVQ",
           "name": "OpenAi account"
         }
       }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        1420,
+        -540
+      ],
+      "id": "55796249-4414-4a5b-91a5-c724978ca4ce",
+      "name": "Extract from File2"
+    },
+    {
+      "parameters": {
+        "operation": "executeQuery",
+        "query": "TRUNCATE TABLE public.mevy_chatbot;",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.postgres",
+      "typeVersion": 2.5,
+      "position": [
+        220,
+        -620
+      ],
+      "id": "b357ea30-787b-465f-93b4-81f7354e58fd",
+      "name": "Wipe Database",
+      "alwaysOutputData": true,
+      "credentials": {
+        "postgres": {
+          "id": "6a69WAhOinNYcjHH",
+          "name": "Postgres account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "content": "## Legifrance",
+        "height": 660,
+        "width": 2420,
+        "color": 3
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -180,
+        -920
+      ],
+      "id": "612835f5-f66d-4611-8326-25f3b2435b50",
+      "name": "Sticky Note1"
     }
   ],
   "pinData": {},
@@ -638,7 +650,7 @@
       "main": [
         [
           {
-            "node": "Edit Fields1",
+            "node": "Wipe Database",
             "type": "main",
             "index": 0
           }
@@ -679,41 +691,20 @@
         ]
       ]
     },
-    "Embeddings OpenAI": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Qdrant Vector Store1",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
     "HTTP Request": {
       "main": [
         [
           {
-            "node": "Postgres PGVector Store",
+            "node": "Extract from File2",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Qdrant Vector Store1": {
-      "main": [
-        []
-      ]
-    },
     "Default Data Loader1": {
       "ai_document": [
         [
-          {
-            "node": "Qdrant Vector Store1",
-            "type": "ai_document",
-            "index": 0
-          },
           {
             "node": "Postgres PGVector Store",
             "type": "ai_document",
@@ -765,16 +756,38 @@
           }
         ]
       ]
+    },
+    "Extract from File2": {
+      "main": [
+        [
+          {
+            "node": "Postgres PGVector Store",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wipe Database": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
   "settings": {
     "executionOrder": "v1"
   },
-  "versionId": "57b3ad2b-8e8d-4153-adc9-88143c5875d3",
+  "versionId": "f21d9005-3183-4f43-b9ec-2fcfa4cc0bb4",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "4d4c2a67139cff11684e1a9390cf71fd8c932f80dd47f076f9f0a1692282c479"
+    "instanceId": "99822f7ec4789f77623e1b518cbc34b54d6bfa4b1b56d88cc98c31101a4e8871"
   },
   "id": "XVegloa3d92D9Apr",
   "tags": [

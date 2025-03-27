@@ -20,6 +20,21 @@ Access Qdrant dashboard at `http://localhost:6333/dashboard`
 
 Run bot commands (see section blow)
 
+### Developer Installation
+
+> [!NOTE] You need to have [uv package manager](https://docs.astral.sh/uv/) installed locally before proceeding.
+
+Download code
+```bash
+git clone https://github.com/williammadie/mevy-bot.git
+cd mevy-bot
+```
+
+Install Python dependencies
+```bash
+uv sync
+```
+
 ## Bot commands
 
 See available actions

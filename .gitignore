@@ -5,7 +5,7 @@
 data_definition/**
 data_storage/**
 data_storage**
-vector_store/**
+secrets/**
 logs/**
 logs_backup/**
 
@@ -23,3 +23,5 @@ __pycache__/**
 .deepeval_telemtry.txt
 .deepeval-cache.json
 temp_test_run_data.json
+
+error-log.txt
