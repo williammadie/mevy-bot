@@ -31,7 +31,7 @@ class GdriveService:
         )
         self.service = build("drive", "v3", credentials=credentials)
 
-    def list_knowledge_files(self: Self) -> List[str]:
+    def list_knowledge_files(self: Self) -> dict:
         folder_id = self.get_knowledge_folder_id()
         raw_query = f"'{folder_id}' in parents"
         # pylint: disable=maybe-no-member
@@ -52,9 +52,14 @@ class GdriveService:
         matching_folder_ids = matching_folders.get("files", [])
         return matching_folder_ids[0].get("id")
 
-    def download_and_write_file(self: Self, file_id: str, file_name: str) -> None:
+    def download_and_write_file(
+        self: Self,
+        file_id: str,
+        file_name: str,
+        target_dir: str
+    ) -> None:
         file_content = self.download_file(file_id)
-        self.write_file(file_content, file_name)
+        self.write_file(file_content, file_name, target_dir)
 
     def download_file(self: Self, file_id: str) -> bytes:
         try:
@@ -73,14 +78,12 @@ class GdriveService:
 
         return file.getvalue()
 
-    def write_file(self: Self, file_content: bytes, file_name: str) -> None:
-        file_path = os.path.join(PathFinder.data_storage_manual(), file_name)
+    def write_file(
+        self: Self,
+        file_content: bytes,
+        file_name: str,
+        target_dir: str
+    ) -> None:
+        file_path = os.path.join(target_dir, file_name)
         with open(file_path, 'wb') as fp:
             fp.write(file_content)
-
-
-if __name__ == "__main__":
-    gdrive_service = GdriveService()
-    # print(gdrive_service.list_knowledge_files())
-    gdrive_service.download_and_write_file(
-        "1BSbyHxpcUYDXPhXUMWoZYvffJwkGtjqu", "test.pdf")

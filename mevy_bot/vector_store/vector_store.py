@@ -39,11 +39,14 @@ class VectorStore:
         self.embedding_model = embedding_model
         self.chat_model = chat_model
 
-    def build_from_data_storage_files(self: Self, collection_name: str) -> None:
+    def build_from_directory_files(
+        self: Self,
+        collection_name: str,
+        target_dir: str
+    ) -> None:
         """ Build a vector store from PDF files in data_storage dir """
         l.info("Building vector store from data storage files...")
-        storage_dir = PathFinder.data_storage()
-        for root, _, files in os.walk(storage_dir):
+        for root, _, files in os.walk(target_dir):
             for filename in files:
                 l.info("Processing %s...", filename)
                 filepath = os.path.join(root, filename)
@@ -64,11 +67,10 @@ class VectorStore:
                     vectors, collection_name)
         l.info("Vector store successfully built.")
 
-    def predict_costs_of_store_building(self: Self) -> None:
-        storage_dir = PathFinder.data_storage()
+    def predict_costs_for_embedding_files(self: Self, target_dir: str) -> None:
         total_cost = Decimal("0")
         total_chars, total_tokens, total_chunks = 0, 0, 0
-        for root, _, files in os.walk(storage_dir):
+        for root, _, files in os.walk(target_dir):
             for filename in files:
                 filepath = os.path.join(root, filename)
                 file_reader = FileReader()

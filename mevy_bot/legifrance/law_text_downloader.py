@@ -19,13 +19,12 @@ class LawTextDownloader:
         code = Code.model_validate(results[0])
         return self.build_code(code)
 
-    def download_code(self: Self, code_name: str) -> None:
+    def download_code(self: Self, code_name: str, target_dir: str) -> None:
         code_content = self.fetch_code(code_name=code_name)
 
         filename = unidecode(code_name).lower().replace(" ", "_")
 
-        data_dir = PathFinder.data_storage_auto()
-        filepath = os.path.join(data_dir, f"{filename}.txt")
+        filepath = os.path.join(target_dir, f"{filename}.txt")
         with open(filepath, 'w', encoding='utf8') as f:
             f.write(code_content)
 
