@@ -2,6 +2,7 @@ import os
 from typing import Self, List, Sequence
 
 from qdrant_client import QdrantClient
+from qdrant_client.http.exceptions import ResponseHandlingException
 from qdrant_client.models import (
     Distance,
     VectorParams,
@@ -53,3 +54,13 @@ class QdrantCollection():
             query_vector=embeddings,
             limit=max_output_documents
         )
+
+    @staticmethod
+    def healthcheck() -> bool:
+        url = os.getenv('QDRANT_DB_URL')
+        client = QdrantClient(url=url)
+        try:
+            client.info()
+            return True
+        except ResponseHandlingException:
+            return False

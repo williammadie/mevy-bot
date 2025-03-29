@@ -131,3 +131,7 @@ class VectorStore:
             collection_name,
             point_embeddings
         )
+
+    @staticmethod
+    def healthcheck() -> bool:
+        return QdrantCollection.healthcheck()

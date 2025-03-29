@@ -6,13 +6,12 @@ from dotenv import load_dotenv
 from lxml.html import fromstring
 from unidecode import unidecode
 
-from mevy_bot.path_finder import PathFinder
-from mevy_bot.legifrance.models.code import Code, Section
+from mevy_bot.models.legifrance import Code, Section
 
 load_dotenv()
 
 
-class LawTextDownloader:
+class LegifranceService:
 
     def fetch_code(self: Self, code_name: str) -> str:
         results = recherche_CODE(code_name=code_name)
@@ -44,9 +43,3 @@ class LawTextDownloader:
         for section in sorted(section.sections, key=lambda x: x.intOrdre):
             section_content += self.build_section(section)
         return section_content
-
-
-if __name__ == '__main__':
-    downloader = LawTextDownloader()
-    downloader.download_code("Code civil")
-    # downloader.download_code("Code général des impôts")

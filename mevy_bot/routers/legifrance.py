@@ -1,22 +1,22 @@
 import tempfile
+from fastapi import APIRouter
 
-from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from mevy_bot.legifrance.law_text_downloader import LawTextDownloader
+from mevy_bot.services.legifrance_service import LegifranceService
 
-app = FastAPI()
+router = APIRouter(prefix="/legifrance", tags=["Legifrance"])
 
 
 class CodeDto(BaseModel):
     name: str
 
 
-@app.post("/code")
+@router.post("/code")
 async def download_code(code_dto: CodeDto):
-    downloader = LawTextDownloader()
-    code_content = downloader.fetch_code(code_dto.name)
+    legifrance_service = LegifranceService()
+    code_content = legifrance_service.fetch_code(code_dto.name)
 
     with tempfile.NamedTemporaryFile(delete=False) as fp:
         fp.write(code_content.encode('utf8'))

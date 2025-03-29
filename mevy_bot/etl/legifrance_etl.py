@@ -5,9 +5,8 @@ import tempfile
 from typing import Self
 
 from mevy_bot.path_finder import PathFinder
-from mevy_bot.source_collection.workflow_etl import WorkflowEtl
-from mevy_bot.legifrance.law_text_downloader import LawTextDownloader
-from mevy_bot.models.openai import OpenAIModelFactory
+from mevy_bot.etl.workflow_etl import WorkflowEtl
+from mevy_bot.services.legifrance_service import LegifranceService
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
 from mevy_bot.vector_store.vector_store import VectorStore
 
@@ -17,10 +16,8 @@ logger = logging.getLogger()
 class LegifranceEtl(WorkflowEtl):
 
     def __init__(self: Self) -> None:
-        self.law_text_downloader = LawTextDownloader()
-        self.embedding_model_info = OpenAIModelFactory.text_embedding_3_small()
-        self.generator_model_info = OpenAIModelFactory.gpt4o_mini()
-        self.collection_name = "mevy_bot"
+        super().__init__()
+        self.legifrance_service = LegifranceService()
 
     def run(self: Self, predict_only: bool = False) -> None:
         super().run()
@@ -34,7 +31,7 @@ class LegifranceEtl(WorkflowEtl):
             for code_name in codes_to_load:
                 logger.info("Step 2: Downloading code %s from Legifrance API...",
                             code_name)
-                self.law_text_downloader.download_code(code_name, tmp_dir)
+                self.legifrance_service.download_code(code_name, tmp_dir)
                 logger.info("Step 2: Code %s downloaded.", code_name)
 
             store_client = QdrantCollection(
