@@ -1,5 +1,5 @@
-import asyncio
 import logging
+import asyncio
 
 from fastapi import APIRouter, WebSocket
 
@@ -20,7 +20,7 @@ async def websocket_endpoint(websocket: WebSocket):
     await websocket.accept()
     while True:
         user_query = await websocket.receive_text()  # Receive message from client
-        print(f"User: {user_query}")
+        logger.info("Received following user query: %s", user_query)
 
         logger.info("Starting chat operation...")
 
@@ -37,27 +37,24 @@ async def websocket_endpoint(websocket: WebSocket):
 
         rewriter = OpenAIRewriter(generator_model_info.name)
         rewrited_user_query = rewriter.rewrite_user_query(user_query)
-        logger.info("""User query:
+        logger.debug("""User query:
             %s
 
             Rewrited query:
 
             %s
             """,
-                    user_query,
-                    rewrited_user_query)
+                     user_query,
+                     rewrited_user_query)
 
         context = vector_store.search_in_store(
             rewrited_user_query, collection_name)
-        logger.info("Context:\n\n%s", context)
+        logger.debug("Context:\n\n%s", context)
 
         generator = OpenAIGenerator(generator_model_info, vector_store)
-        bot_response = generator.generate_response_with_context(
-            rewrited_user_query, collection_name)
-        logger.info(bot_response)
 
-        for word in bot_response.split():
-            await websocket.send_text(word + " ")  # Stream words one by one
-            await asyncio.sleep(0.5)  # Simulate delay
+        for chunk in generator.generate_response_with_context_stream(
+                rewrited_user_query, collection_name):
+            await websocket.send_text(chunk)
 
         await websocket.send_text("[END]")  # Indicate end of response

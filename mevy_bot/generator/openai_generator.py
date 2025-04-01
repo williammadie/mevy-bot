@@ -1,9 +1,9 @@
 import logging
-from typing import Self, List
+from typing import Self, List, Generator
 
 from qdrant_client.models import ScoredPoint
 
-from mevy_bot.generator.generator import Generator
+from mevy_bot.generator.generator import ResponseGenerator
 from mevy_bot.models.openai import ChatModel
 from mevy_bot.vector_store.vector_store import VectorStore
 from mevy_bot.gateways.openai_gateway import OpenAIGateway
@@ -11,7 +11,7 @@ from mevy_bot.gateways.openai_gateway import OpenAIGateway
 l = logging.getLogger(__name__)
 
 
-class OpenAIGenerator(Generator):
+class OpenAIGenerator(ResponseGenerator):
 
     def __init__(
         self: Self,
@@ -30,6 +30,18 @@ class OpenAIGenerator(Generator):
         user_prompt = self.build_user_prompt(question, context)
         return self.openai_gateway.send_query(system_prompt, user_prompt)
 
+    def generate_response_with_context_stream(
+        self: Self, question: str, collection_name: str
+    ) -> Generator:
+        context_documents = self.retrieve_context_documents(
+            question, collection_name)
+        context = self.refine_retrieved_context(context_documents)
+        system_prompt = self.build_system_prompt()
+        user_prompt = self.build_user_prompt(question, context)
+
+        for chunk in self.openai_gateway.send_query_stream(system_prompt, user_prompt):
+            yield chunk
+
     def refine_retrieved_context(self: Self, documents: List[ScoredPoint]) -> str:
         context = ""
         for doc in documents:
@@ -38,7 +50,7 @@ class OpenAIGenerator(Generator):
                 context += f'{doc_content}\n\n'
 
         if not context:
-            context = "Aucune information du contexte en permet de répondre à cette demande."
+            context = "Aucune information du contexte ne permet de répondre à cette demande."
 
         return context
 

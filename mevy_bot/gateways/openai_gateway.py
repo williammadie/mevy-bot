@@ -1,8 +1,11 @@
-from typing import Self
+import logging
+from typing import Self, Generator
 
 from openai import OpenAI
 
 from mevy_bot.exceptions.no_response_error import NoResponseError
+
+logger = logging.getLogger()
 
 
 class OpenAIGateway:
@@ -27,7 +30,8 @@ class OpenAIGateway:
                     "content": user_prompt
                 }
             ],
-            temperature=self.MODEL_TEMPERATURE
+            temperature=self.MODEL_TEMPERATURE,
+            stream=False
         )
 
         model_response = completion.choices[0].message.content
@@ -36,3 +40,22 @@ class OpenAIGateway:
             raise NoResponseError()
 
         return model_response
+
+    def send_query_stream(
+        self: Self,
+        system_prompt: str,
+        user_prompt: str
+    ) -> Generator:
+        response = self.openai_client.chat.completions.create(
+            model=self.model_name,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            temperature=self.MODEL_TEMPERATURE,
+            stream=True
+        )
+
+        for chunk in response:
+            if chunk.choices[0].delta.content:
+                yield chunk.choices[0].delta.content

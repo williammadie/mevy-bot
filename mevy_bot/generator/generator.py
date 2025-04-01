@@ -1,4 +1,4 @@
-from typing import Self, List, Any
+from typing import Self, List
 from abc import ABC, abstractmethod
 
 from qdrant_client.models import ScoredPoint
@@ -6,7 +6,7 @@ from qdrant_client.models import ScoredPoint
 from mevy_bot.vector_store.vector_store import VectorStore
 
 
-class Generator(ABC):
+class ResponseGenerator(ABC):
 
     MODEL_TEMPERATURE = 0
 
@@ -23,7 +23,7 @@ class Generator(ABC):
     def retrieve_context_documents(self: Self, question: str, collection_name: str) -> List[ScoredPoint]:
         """ Retrieve proper context from vector store """
         return self.vector_store.search_in_store(question, collection_name)
-    
+
     def build_system_prompt(self: Self) -> str:
         return """
         Vous êtes un spécialiste des questions juridique et fiscale en France.
