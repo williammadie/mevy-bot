@@ -9,3 +9,9 @@ router = APIRouter(prefix="/vector-store", tags=["Vector Store"])
 async def vector_store_healthcheck():
     result = VectorStore.healthcheck()
     return {"status": "UP" if result else "DOWN"}
+
+
+@router.delete("/all-knowledge")
+async def delete_all_knowledge():
+    VectorStore.delete_collection("mevy_bot")
+    return {"message": "collection sucessfully deleted!"}

@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel, Field
 
 from mevy_bot.etl.gdrive_etl import GdriveEtl
+from mevy_bot.etl.legifrance_etl import LegifranceEtl
 
 router = APIRouter(prefix="/etl-workflows", tags=["ETL Workflows"])
 
@@ -20,5 +21,7 @@ async def run_gdrive_etl_workflow(dto: RunEtlWorkflowDto):
 
 @router.post("/legifrance")
 async def run_legifrance_etl_workflow(dto: RunEtlWorkflowDto):
-    raise NotImplementedError()
-    return {"message": "Legifrance ETL workflow completed with success!"}
+    legifrance_etl = LegifranceEtl()
+    legifrance_etl.run(predict_only=dto.predict_only)
+
+    return {"message": "Google Drive ETL workflow completed with success!"}

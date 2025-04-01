@@ -51,6 +51,11 @@ class VectorStore:
                 l.info("Processing %s...", filename)
                 filepath = os.path.join(root, filename)
 
+                l.info("Deleting known points in vector store for %s...", filename)
+                self.store_client.delete_vectors_for_source(
+                    collection_name, filename)
+                l.info("Points deleted.")
+
                 text_chunker = TextChunker(
                     self.embedding_model, self.chat_model)
                 text_chunks = text_chunker.chunks_from_document(
@@ -131,6 +136,10 @@ class VectorStore:
             collection_name,
             point_embeddings
         )
+    
+    @staticmethod
+    def delete_collection(collection_name: str) -> None:
+        return QdrantCollection.delete_collection(collection_name)
 
     @staticmethod
     def healthcheck() -> bool:
