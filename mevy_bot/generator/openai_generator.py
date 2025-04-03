@@ -50,7 +50,11 @@ class OpenAIGenerator(ResponseGenerator):
                 context += f'{doc_content}\n\n'
 
         if not context:
-            context = "Aucune information du contexte ne permet de répondre à cette demande."
+            context = """
+            Je ne dispose pas des informations nécessaires pour répondre à cette demande.
+            
+            Pour plus d'informations, je vous invite à réitérer votre demande auprès d'un opérateur Mevy.
+            """
 
         return context
 
