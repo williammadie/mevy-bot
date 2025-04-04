@@ -3,12 +3,10 @@ import os
 from typing import Self, List
 from decimal import Decimal
 
-
 from qdrant_client.models import (
     ScoredPoint
 )
 
-from mevy_bot.path_finder import PathFinder
 from mevy_bot.file_reader import FileReader
 from mevy_bot.text_chunker import TextChunker
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
@@ -44,17 +42,12 @@ class VectorStore:
         collection_name: str,
         target_dir: str
     ) -> None:
-        """ Build a vector store from PDF files in data_storage dir """
+        """ Build a vector store from PDF files in target dir """
         l.info("Building vector store from data storage files...")
         for root, _, files in os.walk(target_dir):
             for filename in files:
                 l.info("Processing %s...", filename)
                 filepath = os.path.join(root, filename)
-
-                l.info("Deleting known points in vector store for %s...", filename)
-                self.store_client.delete_vectors_for_source(
-                    collection_name, filename)
-                l.info("Points deleted.")
 
                 text_chunker = TextChunker(
                     self.embedding_model, self.chat_model)
@@ -136,7 +129,14 @@ class VectorStore:
             collection_name,
             point_embeddings
         )
-    
+
+    def delete_vectors_for_source(self: Self, collection_name: str, source_name: str) -> None:
+        l.info(
+            "Deleting points in vector store for %s...", source_name)
+        self.store_client.delete_vectors_for_source(
+            collection_name, source_name)
+        l.info("Points deleted.")
+
     @staticmethod
     def delete_collection(collection_name: str) -> None:
         return QdrantCollection.delete_collection(collection_name)

@@ -4,7 +4,7 @@ from typing import Self, List, Sequence
 
 from http import HTTPStatus
 
-from qdrant_client import QdrantClient
+from qdrant_client import AsyncQdrantClient
 from qdrant_client.http.exceptions import (
     ResponseHandlingException,
     UnexpectedResponse
@@ -34,11 +34,11 @@ class QdrantCollection():
         self.client = self.get_qdrant_client()
 
     @staticmethod
-    def get_qdrant_client() -> QdrantClient:
-        return QdrantClient(url=QdrantCollection.URL)
+    def get_qdrant_client() -> AsyncQdrantClient:
+        return AsyncQdrantClient(url=QdrantCollection.URL)
 
-    def create_collection(self: Self, name: str) -> None:
-        self.client.create_collection(
+    async def create_collection(self: Self, name: str) -> None:
+        await self.client.create_collection(
             collection_name=name,
             vectors_config=VectorParams(
                 size=self.vectore_dimensions,
@@ -46,13 +46,13 @@ class QdrantCollection():
             )
         )
 
-    def insert_vectors_in_collection(
+    async def insert_vectors_in_collection(
         self: Self,
         points: List[PointStruct],
         collection_name: str
     ) -> None:
         if not self.client.collection_exists(collection_name):
-            self.create_collection(collection_name)
+            await self.create_collection(collection_name)
 
         self.client.upload_points(
             collection_name=collection_name,
@@ -60,24 +60,24 @@ class QdrantCollection():
             points=points
         )
 
-    def search_in_collection(
+    async def search_in_collection(
         self: Self,
         collection_name: str,
         embeddings: Sequence[float],
         max_output_documents: int = 3
     ) -> List[ScoredPoint]:
-        return self.client.search(
+        return await self.client.search(
             collection_name=collection_name,
             query_vector=embeddings,
             limit=max_output_documents
         )
 
-    def delete_vectors_for_source(
+    async def delete_vectors_for_source(
             self: Self,
             collection_name: str,
             source_name: str) -> None:
         try:
-            self.client.delete(
+            await self.client.delete(
                 collection_name=collection_name,
                 points_selector=FilterSelector(
                     filter=Filter(
@@ -95,15 +95,15 @@ class QdrantCollection():
                 l.info("Cannot delete vectors, reason: %s", exc.content)
 
     @staticmethod
-    def delete_collection(collection_name: str) -> None:
+    async def delete_collection(collection_name: str) -> None:
         client = QdrantCollection.get_qdrant_client()
-        client.delete_collection(collection_name=collection_name)
+        await client.delete_collection(collection_name=collection_name)
 
     @staticmethod
-    def healthcheck() -> bool:
+    async def healthcheck() -> bool:
         client = QdrantCollection.get_qdrant_client()
         try:
-            client.info()
+            await client.info()
             return True
         except ResponseHandlingException:
             return False

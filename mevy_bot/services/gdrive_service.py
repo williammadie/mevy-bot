@@ -1,6 +1,6 @@
 import os
 import io
-from typing import Self, List
+from typing import Self
 
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
@@ -37,7 +37,7 @@ class GdriveService:
         # pylint: disable=maybe-no-member
         results = self.service.files().list(
             q=raw_query,
-            fields="files(id, name)"
+            fields="files(id, name, modifiedTime)"
         ).execute()
         return results
 

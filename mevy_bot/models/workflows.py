@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from asyncio.tasks import Task
+from multiprocessing import Process
 
 @dataclass
 class WorkflowInfo:
-    asyncio_task: Task
+    workflow_process: Process
