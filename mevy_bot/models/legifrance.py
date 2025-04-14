@@ -29,3 +29,11 @@ class Code(BaseModel):
     jurisState: str
     nature: str
     sections: List[Section]
+
+class Law(BaseModel):
+    id: str
+    cid: str
+    title: str
+    modifDate: str
+    nature: str
+    sections: List[Section]

@@ -1,7 +1,7 @@
 import os
 from typing import Self
 
-from pylegifrance import recherche_CODE
+from pylegifrance import recherche_CODE, recherche_LODA
 from dotenv import load_dotenv
 from lxml.html import fromstring
 from unidecode import unidecode
@@ -43,3 +43,11 @@ class LegifranceService:
         for section in sorted(section.sections, key=lambda x: x.intOrdre):
             section_content += self.build_section(section)
         return section_content
+    
+    def fetch_law(self: Self) -> str:
+        results = recherche_LODA(text_id="2025-127")
+        print(law_content)
+
+if __name__ == "__main__":
+    legifrance_service = LegifranceService()
+    legifrance_service.fetch_law()

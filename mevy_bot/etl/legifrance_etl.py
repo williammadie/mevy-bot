@@ -1,6 +1,5 @@
 import os
 import json
-import logging
 import tempfile
 from typing import Self
 
@@ -9,30 +8,29 @@ from mevy_bot.etl.workflow_etl import WorkflowEtl
 from mevy_bot.services.legifrance_service import LegifranceService
 from mevy_bot.vector_store.qdrant_collection import QdrantCollection
 from mevy_bot.vector_store.vector_store import VectorStore
+from mevy_bot.etl.workflow_logger import WorkflowLogger
 
-logger = logging.getLogger()
 
 
 class LegifranceEtl(WorkflowEtl):
 
-    def __init__(self: Self) -> None:
-        super().__init__()
+    def __init__(self: Self, logger: WorkflowLogger) -> None:
+        super().__init__(logger)
         self.legifrance_service = LegifranceService()
 
     def run(self: Self, predict_only: bool = False) -> None:
         super().run()
-        logger.info("Step 1: Loading JSON referential...")
+        self.logger.info("Step 1: Loading JSON referential...")
         sources_dict = self.load_json_referential()
         codes_to_load = sources_dict["codes"]
-        logger.info("Step 1: JSON referential loaded.")
+        self.logger.info("Step 1: JSON referential loaded.")
 
-        logger.info("Step 2: Downloading codes from Legifrance API...")
+        self.logger.info("Step 2: Downloading codes from Legifrance API...")
         with tempfile.TemporaryDirectory() as tmp_dir:
             for code_name in codes_to_load:
-                logger.info("Step 2: Downloading code %s from Legifrance API...",
-                            code_name)
+                self.logger.info(f"Step 2: Downloading code {code_name} from Legifrance API...")
                 self.legifrance_service.download_code(code_name, tmp_dir)
-                logger.info("Step 2: Code %s downloaded.", code_name)
+                self.logger.info("Step 2: Code {code_name} downloaded.")
 
             store_client = QdrantCollection(
                 self.embedding_model_info.vector_dimensions)

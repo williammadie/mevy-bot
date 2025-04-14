@@ -36,9 +36,12 @@ class WorkflowService:
     def workflow_loop(workflow_id: int) -> None:
         workflow: WorkflowEtl = WorkflowFactory.create_workflow(
             workflow_id)
+        workflow_logger = workflow.get_workflow_logger()
+        workflow_delay = 60
         while True:
             workflow.run()
-            time.sleep(60)
+            workflow_logger.info(f"Next execution in {workflow_delay} seconds.")
+            time.sleep(workflow_delay)
 
     @staticmethod
     def stop_workflow(workflow_id: int) -> None:

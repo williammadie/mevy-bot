@@ -1,6 +1,6 @@
 # Mevy Bot
 
-## Chatbot V1
+## Chatbot V3
 
 ### Installation
 
@@ -18,7 +18,14 @@ docker compose run
 
 Access Qdrant dashboard at `http://localhost:6333/dashboard`
 
-Run bot commands (see section blow)
+
+Run Mevy Bot Orchestrator
+```bash
+cd mevy_bot/routers
+uv run fastapi dev main.py
+```
+
+Access Swagger UI at `http://localhost:8000/docs`
 
 ### Developer Installation
 
@@ -35,18 +42,13 @@ Install Python dependencies
 uv sync
 ```
 
-## Bot commands
-
-See available actions
+Run Mevy Bot Orchestrator
 ```bash
-python3 -m mevy_bot -h
+cd mevy_bot/routers
+uv run fastapi dev main.py
 ```
 
-Chat through the GUI
-```bash
-cd mevy_bot/
-streamlit run app.py
-```
+Access Swagger UI at `http://localhost:8000/docs`
 
 ## Miscellaneous Commands
 
@@ -55,7 +57,7 @@ Run RAG tests
 deepeval test run tests/retriever/test_retriever.py
 ```
 
-## Chatbot V2
+## Chatbot V2 (n8n version)
 
 ### Installation
 

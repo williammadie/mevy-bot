@@ -30,10 +30,18 @@ class PathFinder:
     @classmethod
     def data_storage_manual(cls) -> str:
         return os.path.join(cls.data_storage(), "manual")
-
+    
     @classmethod
     def log_dirpath(cls) -> str:
         log_dirpath = os.getenv('LOGS_DIRPATH')
         if log_dirpath is None:
             return os.path.join(cls.project_path(), 'logs')
         return log_dirpath
+    
+    @classmethod
+    def workflow_log_dirpath(cls) -> str:
+        return os.path.join(
+            PathFinder.data_storage(),
+            "workflows",
+            "logs"
+        )
