@@ -1,12 +1,13 @@
+import os
 from http import HTTPStatus
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from mevy_bot.etl.gdrive_etl import GdriveEtl
-from mevy_bot.etl.legifrance_etl import LegifranceEtl
 from mevy_bot.services.workflow_service import WorkflowService
 from mevy_bot.exceptions.workflows import JobActiveError, JobNotActiveError
+from mevy_bot.path_finder import PathFinder
+from mevy_bot.file_reader import FileReader
 
 router = APIRouter(prefix="/etl-workflows", tags=["ETL Workflows"])
 
@@ -58,3 +59,29 @@ async def list_workflows():
             "isActive": False,
         },
     ]
+
+
+@router.get("/logs/{workflow_id}")
+async def retrieve_logs(workflow_id: int):
+    workflow_log_file = os.path.join(
+        PathFinder.workflow_log_dirpath(),
+        f"{workflow_id}.log"
+    )
+    try:
+        return FileReader.tail(workflow_log_file)
+    except FileNotFoundError as exc:
+        raise HTTPException(
+            HTTPStatus.BAD_REQUEST,
+            detail="No recorded logs for this workflow."
+        ) from exc
+
+
+@router.get("/details/{workflow_id}")
+async def get_workflow_details(workflow_id: int):
+    return {
+        "id": 1,
+        "name": "Google Drive",
+        "description": "Watch files in Google Drive storage and update/delete/insert knowledge accordingly.",
+        "isActive": False,
+        "triggerInterval": "Every 60 seconds"
+    }

@@ -1,4 +1,5 @@
-from typing import Self
+from collections import deque
+from typing import Self, List
 
 from PyPDF2 import PdfReader
 
@@ -29,3 +30,8 @@ class FileReader:
             for page in pdf_reader.pages:
                 file_text += page.extract_text()
         return file_text
+
+    @staticmethod
+    def tail(file_path: str, n:int=1000) -> List[str]:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            return list(deque(f, maxlen=n))
