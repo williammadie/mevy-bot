@@ -7,7 +7,9 @@ from mevy_bot.routers import (
     etl,
     legifrance,
     vector_store,
-    chat
+    chat,
+    auth,
+    healthcheck
 )
 
 ORIGINS = [
@@ -28,3 +30,5 @@ app.include_router(etl.router)
 app.include_router(vector_store.router)
 app.include_router(legifrance.router)
 app.include_router(chat.router)
+app.include_router(auth.router)
+app.include_router(healthcheck.router)
