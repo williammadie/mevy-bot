@@ -4,3 +4,11 @@ services:
     image: qdrant/qdrant:latest
     ports:
       - '6333:6333'
+  
+  postgres-db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'

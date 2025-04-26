@@ -1,5 +1,6 @@
 """ REST API Entrypoint """
 
+from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -12,11 +13,21 @@ from mevy_bot.routers import (
     healthcheck
 )
 
+from mevy_bot.database.database_handler import DatabaseHandler
+
 ORIGINS = [
     "http://127.0.0.1:5173"
 ]
 
-app = FastAPI(title="Mevy Bot API")
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """ Startup code """
+    database_handler = DatabaseHandler()
+    database_handler.ensure_database_exists()
+    yield
+
+app = FastAPI(title="Mevy Bot API", lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,

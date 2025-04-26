@@ -1,5 +1,8 @@
 import os
 
+from mevy_bot.database.database_handler import DatabaseHandler
+
+
 class HealthcheckService:
 
     JWT_SECRET = os.environ.get("JWT_SECRET")
@@ -8,8 +11,15 @@ class HealthcheckService:
 
     @staticmethod
     def get_kpis() -> dict:
+        database_handler = DatabaseHandler()
+        db_status = database_handler.healthcheck()
         return {
-            "is_jwt_secret_set": HealthcheckService.JWT_SECRET is not None,
-            "jwt_signing_algorithm": HealthcheckService.JWT_SIGNING_ALGORITHM,
-            "jwt_ttl_in_seconds": HealthcheckService.JWT_TTL_IN_SECONDS
+            "authentication": {
+                "is_jwt_secret_set": HealthcheckService.JWT_SECRET is not None,
+                "jwt_signing_algorithm": HealthcheckService.JWT_SIGNING_ALGORITHM,
+                "jwt_ttl_in_seconds": HealthcheckService.JWT_TTL_IN_SECONDS,
+            },
+            "business_db": {
+                "status": "UP" if db_status else "DOWN"
+            }
         }

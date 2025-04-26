@@ -4,6 +4,7 @@ import time
 import binascii
 from typing import Dict
 
+import bcrypt
 import jwt
 from jwt import InvalidAlgorithmError
 
@@ -76,6 +77,17 @@ class AuthenticationHandler:
             return decoded_token
         else:
             return None
+
+    @staticmethod
+    def hash_password(password: str) -> bytes:
+        password_bytes = password.encode("utf8")
+        salt = bcrypt.gensalt()
+        return bcrypt.hashpw(password_bytes, salt)
+
+    @staticmethod
+    def is_password_correct(input_password, known_password_hash) -> bool:
+        input_password_bytes = input_password.encode("utf8")
+        return bcrypt.checkpw(input_password_bytes, known_password_hash)
 
 
 if __name__ == "__main__":
