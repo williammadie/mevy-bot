@@ -18,12 +18,6 @@ class AuthenticationHandler:
     JWT_TTL_IN_SECONDS = int(os.environ.get("JWT_TTL_IN_SECONDS"))
 
     @staticmethod
-    def build_jwt_response_body(token: str) -> dict:
-        return {
-            "access_token": token
-        }
-
-    @staticmethod
     def generate_jwt_secret(secret_length: int = 24) -> bytes:
         """
         Generates a random JWT secret key.
@@ -42,7 +36,7 @@ class AuthenticationHandler:
         return binascii.hexlify(os.urandom(secret_length))
 
     @staticmethod
-    def sign_jwt(user_id: str) -> Dict[str, str]:
+    def sign_jwt(user_id: str) -> str:
         payload = {
             "user_id": user_id,
             "expires": time.time() + AuthenticationHandler.JWT_TTL_IN_SECONDS
@@ -53,7 +47,7 @@ class AuthenticationHandler:
             algorithm=AuthenticationHandler.JWT_SIGNING_ALGORITHM
         )
 
-        return AuthenticationHandler.build_jwt_response_body(token)
+        return token
 
     @staticmethod
     def decode_jwt(token: str) -> dict | None:

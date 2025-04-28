@@ -25,6 +25,7 @@ async def lifespan(app: FastAPI):
     """ Startup code """
     database_handler = DatabaseHandler()
     database_handler.ensure_database_exists()
+    database_handler.create_all_tables()
     yield
 
 app = FastAPI(title="Mevy Bot API", lifespan=lifespan)

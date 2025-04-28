@@ -5,6 +5,8 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
+from mevy_bot.models.user import User
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,9 +34,9 @@ class DatabaseHandler:
         """Creates a new database session."""
         return self.session_local()
 
-    def create_all_tables(self, base):
-        """Optional: Creates all tables (if you want to call from models.Base)."""
-        base.metadata.create_all(bind=self.engine)
+    def create_all_tables(self):
+        """Optional: Creates all tables"""
+        User.metadata.create_all(bind=self.engine)
 
     def drop_all_tables(self, base):
         """Optional: Drops all tables."""
