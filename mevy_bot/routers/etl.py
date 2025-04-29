@@ -8,7 +8,7 @@ from mevy_bot.services.workflow_service import WorkflowService
 from mevy_bot.exceptions.workflows import JobActiveError, JobNotActiveError
 from mevy_bot.path_finder import PathFinder
 from mevy_bot.file_reader import FileReader
-from mevy_bot.authentication.bearer_authentication import BearerAuthentication
+from mevy_bot.authentication.cookie_authentication import CookieAuthentication
 
 router = APIRouter(prefix="/etl-workflows", tags=["ETL Workflows"])
 
@@ -17,7 +17,7 @@ class RunEtlWorkflowDto(BaseModel):
     predict_only: bool = Field(default=False)
 
 
-@router.post("/{workflow_id}", dependencies=[Depends(BearerAuthentication())])
+@router.post("/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
 async def start_workflow(workflow_id: int):
     try:
         WorkflowService.start_workflow(workflow_id)
@@ -28,7 +28,7 @@ async def start_workflow(workflow_id: int):
         ) from exc
 
 
-@router.delete("/{workflow_id}", dependencies=[Depends(BearerAuthentication())])
+@router.delete("/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
 async def stop_workflow(workflow_id: int):
     try:
         WorkflowService.stop_workflow(workflow_id)
@@ -39,12 +39,12 @@ async def stop_workflow(workflow_id: int):
         ) from exc
 
 
-@router.get("/active", dependencies=[Depends(BearerAuthentication())])
+@router.get("/active", dependencies=[Depends(CookieAuthentication())])
 async def list_active_workflows():
     return {"active": WorkflowService.list_active_workflows()}
 
 
-@router.get("/all", dependencies=[Depends(BearerAuthentication())])
+@router.get("/all", dependencies=[Depends(CookieAuthentication())])
 async def list_workflows():
     return [
         {
@@ -62,7 +62,7 @@ async def list_workflows():
     ]
 
 
-@router.get("/logs/{workflow_id}", dependencies=[Depends(BearerAuthentication())])
+@router.get("/logs/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
 async def retrieve_logs(workflow_id: int):
     workflow_log_file = os.path.join(
         PathFinder.workflow_log_dirpath(),
@@ -77,7 +77,7 @@ async def retrieve_logs(workflow_id: int):
         ) from exc
 
 
-@router.get("/details/{workflow_id}", dependencies=[Depends(BearerAuthentication())])
+@router.get("/details/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
 async def get_workflow_details(workflow_id: int):
     return {
         "id": 1,

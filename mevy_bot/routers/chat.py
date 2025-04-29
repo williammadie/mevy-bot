@@ -49,13 +49,13 @@ async def websocket_endpoint(websocket: WebSocket):
                          user_query,
                          rewrited_user_query)
 
-            context = vector_store.search_in_store(
+            context = await vector_store.search_in_store(
                 rewrited_user_query, collection_name)
             logger.debug("Context:\n\n%s", context)
 
             generator = OpenAIGenerator(generator_model_info, vector_store)
 
-            for chunk in generator.generate_response_with_context_stream(
+            async for chunk in generator.generate_response_with_context_stream(
                     rewrited_user_query, collection_name):
                 await websocket.send_text(chunk)
 
@@ -64,6 +64,6 @@ async def websocket_endpoint(websocket: WebSocket):
     except WebSocketDisconnect:
         logger.warning("Client closed WebSocket.")
     except Exception as e:
-        logger.error(f"Unexpected WebSocket error: {e}")
+        logger.error("Unexpected WebSocket error:", exc_info=e)
     finally:
         logger.info("Closing WebSocket connection.")

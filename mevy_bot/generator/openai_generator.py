@@ -1,5 +1,5 @@
 import logging
-from typing import Self, List, Generator
+from typing import Self, List, AsyncGenerator
 
 from qdrant_client.models import ScoredPoint
 
@@ -30,10 +30,10 @@ class OpenAIGenerator(ResponseGenerator):
         user_prompt = self.build_user_prompt(question, context)
         return self.openai_gateway.send_query(system_prompt, user_prompt)
 
-    def generate_response_with_context_stream(
+    async def generate_response_with_context_stream(
         self: Self, question: str, collection_name: str
-    ) -> Generator:
-        context_documents = self.retrieve_context_documents(
+    ) -> AsyncGenerator:
+        context_documents = await self.retrieve_context_documents(
             question, collection_name)
         context = self.refine_retrieved_context(context_documents)
         system_prompt = self.build_system_prompt()

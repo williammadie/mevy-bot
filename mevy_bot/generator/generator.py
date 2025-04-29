@@ -20,9 +20,9 @@ class ResponseGenerator(ABC):
     def generate_response_with_context(self: Self, question: str, collection_name: str) -> str:
         pass
 
-    def retrieve_context_documents(self: Self, question: str, collection_name: str) -> List[ScoredPoint]:
+    async def retrieve_context_documents(self: Self, question: str, collection_name: str) -> List[ScoredPoint]:
         """ Retrieve proper context from vector store """
-        return self.vector_store.search_in_store(question, collection_name)
+        return await self.vector_store.search_in_store(question, collection_name)
 
     def build_system_prompt(self: Self) -> str:
         return """

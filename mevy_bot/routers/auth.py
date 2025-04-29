@@ -1,10 +1,7 @@
-from datetime import datetime, timedelta
-
 from http import HTTPStatus
 from fastapi import APIRouter, HTTPException, Depends, Response
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
-import pytz
 
 from mevy_bot.database.database_handler import DatabaseHandler
 from mevy_bot.dtos.user import UserDto, UserLoginDto
@@ -45,7 +42,7 @@ def register(user_dto: UserDto, db: Session = Depends(get_db)):
 
 
 @router.post("/login")
-def login(user_dto: UserLoginDto, db: Session = Depends(get_db), response: Response = None):
+def login(user_dto: UserLoginDto, response: Response, db: Session = Depends(get_db)):
     user_service = UserService(db)
     user = user_service.get_user_by_email(user_dto.email)
 
@@ -69,6 +66,8 @@ def login(user_dto: UserLoginDto, db: Session = Depends(get_db), response: Respo
     access_token = AuthenticationHandler.sign_jwt(user_dto.email)
     access_token_ttl = AuthenticationHandler.JWT_TTL_IN_SECONDS
 
+    response = JSONResponse(content={"message": "Login successful"})
+
     # Set the JWT token as an HTTP-only cookie
     response.set_cookie(
         key="access_token",  # Name of the cookie
@@ -76,7 +75,7 @@ def login(user_dto: UserLoginDto, db: Session = Depends(get_db), response: Respo
         httponly=True,  # Prevent JavaScript access
         secure=True,  # Only send cookie over HTTPS
         max_age=access_token_ttl,  # Cookie expiration time
-        samesite="strict"  # Prevent the cookie from being sent in cross-site requests
+        samesite="none",     # Allows cross-origin requests
     )
 
-    return JSONResponse(content={"message": "Login successful"})
+    return response

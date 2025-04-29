@@ -2,7 +2,8 @@ import os
 import logging
 import time
 import binascii
-from typing import Dict
+from typing import Optional
+from fastapi import HTTPException, Request
 
 import bcrypt
 import jwt
@@ -82,6 +83,7 @@ class AuthenticationHandler:
     def is_password_correct(input_password, known_password_hash) -> bool:
         input_password_bytes = input_password.encode("utf8")
         return bcrypt.checkpw(input_password_bytes, known_password_hash)
+
 
 
 if __name__ == "__main__":

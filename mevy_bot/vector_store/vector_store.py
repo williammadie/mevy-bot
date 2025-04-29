@@ -107,7 +107,7 @@ class VectorStore:
             l.info("[TOTAL] Embeddings generation for %s text chunks is expected to cost %f$ [total]",
                    HumanNumber.format(total_chunks), total_cost)
 
-    def search_in_store(
+    async def search_in_store(
         self: Self,
         search_pattern: str,
         collection_name: str
@@ -125,22 +125,22 @@ class VectorStore:
             text_chunks[0])
         point_embeddings = response.data[0].embedding
 
-        return self.store_client.search_in_collection(
+        return await self.store_client.search_in_collection(
             collection_name,
             point_embeddings
         )
 
-    def delete_vectors_for_source(self: Self, collection_name: str, source_name: str) -> None:
+    async def delete_vectors_for_source(self: Self, collection_name: str, source_name: str) -> None:
         l.info(
             "Deleting points in vector store for %s...", source_name)
-        self.store_client.delete_vectors_for_source(
+        await self.store_client.delete_vectors_for_source(
             collection_name, source_name)
         l.info("Points deleted.")
 
     @staticmethod
-    def delete_collection(collection_name: str) -> None:
-        return QdrantCollection.delete_collection(collection_name)
+    async def delete_collection(collection_name: str) -> None:
+        return await QdrantCollection.delete_collection(collection_name)
 
     @staticmethod
-    def healthcheck() -> bool:
-        return QdrantCollection.healthcheck()
+    async def healthcheck() -> bool:
+        return await QdrantCollection.healthcheck()
