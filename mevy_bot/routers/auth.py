@@ -1,3 +1,4 @@
+import logging
 from http import HTTPStatus
 from fastapi import APIRouter, HTTPException, Depends, Response
 from fastapi.responses import JSONResponse
@@ -7,9 +8,12 @@ from mevy_bot.database.database_handler import DatabaseHandler
 from mevy_bot.dtos.user import UserDto, UserLoginDto
 from mevy_bot.authentication.authentication_handler import AuthenticationHandler
 from mevy_bot.services.user_service import UserService
+from mevy_bot.authentication.cookie_authentication import CookieAuthentication
 
 router = APIRouter(prefix="/authentication", tags=["Authentication"])
 db_handler = DatabaseHandler()
+
+logger = logging.getLogger(__name__)
 
 
 def get_db():
@@ -79,3 +83,23 @@ def login(user_dto: UserLoginDto, response: Response, db: Session = Depends(get_
     )
 
     return response
+
+
+@router.get("/me", dependencies=[Depends(CookieAuthentication())])
+async def get_current_user_id(token: str = Depends(CookieAuthentication())):
+    """ Return user ID if connected """
+    payload = AuthenticationHandler.decode_jwt(token)
+    if payload is None:
+        raise HTTPException(status_code=HTTPStatus.FORBIDDEN,
+                            detail="Invalid token payload")
+
+    user_id = payload.get("user_id")
+    logger.info("Payload: %s", user_id)
+    return {"user_id": user_id}
+
+
+@router.post("/logout")
+async def logout(response: Response):
+    """ Delete HTTP-Only session cookie """
+    response.delete_cookie("access_token")
+    return {"status": "success"}
