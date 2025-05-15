@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  mevy-bot-backend:
+    container_name: mevy-bot-backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    networks:
+      - mevy-network
+
+networks:
+  mevy-network:
+    name: mevy-network
+    driver: bridge

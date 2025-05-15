@@ -1,22 +1,36 @@
-FROM alpine:latest
+FROM python:3.13-slim
 
-# Install necessary dependencies: Git, Curl, CMake, and build tools
-# Install necessary dependencies: Git, Curl, CMake, and build tools
-RUN apk add --no-cache git curl cmake make gcc g++ python3-dev musl-dev \
-    apache-arrow apache-arrow-dev
-# Install uv
-ADD https://astral.sh/uv/install.sh /uv-installer.sh
-RUN sh /uv-installer.sh && rm /uv-installer.sh
-ENV PATH="/root/.local/bin/:$PATH"
+ENV PYTHONUNBUFFERED=1
 
-COPY . /mevy-bot/
+# Install git (required for git-based dependencies)
+RUN apt-get update && apt-get install -y git && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /mevy-bot
+# Add `uv` from prebuilt image
+COPY --from=ghcr.io/astral-sh/uv:0.5.11 /uv /uvx /bin/
 
-# Install project
-RUN uv sync --frozen
+# Optional: enable bytecode compilation and copy link mode for uv
+ENV UV_COMPILE_BYTE=1
+ENV UV_LINK_MODE=copy
 
-WORKDIR /mevy-bot/mevy_bot/rest_api/
+# Set working directory
+WORKDIR /app
+ENV PATH="/app/.venv/bin:$PATH"
 
-CMD ["uv", "run", "fastapi", "run", "main.py"]
+# Copy dependency files to install from
+COPY ./pyproject.toml ./uv.lock /app/
 
+# Install dependencies only (no dev, no project install)
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-install-project --no-dev
+
+# Copy the actual source code
+COPY ./mevy_bot /app/mevy_bot
+
+RUN echo "# Project README" > /app/README.md
+
+# Sync again to install the project itself
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
+
+# Start the FastAPI dev server
+CMD ["fastapi", "dev", "mevy_bot/routers/main.py", "--host", "0.0.0.0"]
