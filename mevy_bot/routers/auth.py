@@ -1,3 +1,4 @@
+import os
 import logging
 from http import HTTPStatus
 from fastapi import APIRouter, HTTPException, Depends, Response
@@ -80,6 +81,7 @@ def login(user_dto: UserLoginDto, response: Response, db: Session = Depends(get_
         secure=True,  # Only send cookie over HTTPS
         max_age=access_token_ttl,  # Cookie expiration time
         samesite="none",     # Allows cross-origin requests
+        domain=os.environ.get("COOKIE_SHARED_DOMAINS", None)
     )
 
     return response
