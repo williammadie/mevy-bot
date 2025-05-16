@@ -1,4 +1,5 @@
 """ REST API Entrypoint """
+import os
 
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
@@ -15,11 +16,7 @@ from mevy_bot.routers import (
 
 from mevy_bot.database.database_handler import DatabaseHandler
 
-ORIGINS = [
-    "http://127.0.0.1:5173",
-    "http://localhost:5173"
-]
-
+ORIGINS = os.environ.get("ALLOWED_ORIGINS")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
