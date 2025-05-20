@@ -37,7 +37,7 @@ class VectorStore:
         self.embedding_model = embedding_model
         self.chat_model = chat_model
 
-    def build_from_directory_files(
+    async def build_from_directory_files(
         self: Self,
         collection_name: str,
         target_dir: str
@@ -61,7 +61,7 @@ class VectorStore:
                     text_chunks,
                     filename
                 )
-                self.store_client.insert_vectors_in_collection(
+                await self.store_client.insert_vectors_in_collection(
                     vectors, collection_name)
         l.info("Vector store successfully built.")
 

@@ -18,8 +18,8 @@ class LegifranceEtl(WorkflowEtl):
         super().__init__(logger)
         self.legifrance_service = LegifranceService()
 
-    def run(self: Self, predict_only: bool = False) -> None:
-        super().run()
+    async def run(self: Self, predict_only: bool = False) -> None:
+        await super().run()
         self.logger.info("Step 1: Loading JSON referential...")
         sources_dict = self.load_json_referential()
         codes_to_load = sources_dict["codes"]
@@ -44,7 +44,7 @@ class LegifranceEtl(WorkflowEtl):
                 vector_store.predict_costs_for_embedding_files(tmp_dir)
                 return
 
-            vector_store.build_from_directory_files(
+            await vector_store.build_from_directory_files(
                 self.collection_name, tmp_dir)
 
     def load_json_referential(self: Self) -> dict:

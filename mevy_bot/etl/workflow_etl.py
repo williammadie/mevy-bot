@@ -14,7 +14,7 @@ class WorkflowEtl(ABC):
         self.collection_name = "mevy_bot"
 
     @abstractmethod
-    def run(self: Self, predict_only: bool = False) -> None:
+    async def run(self: Self, predict_only: bool = False) -> None:
         self.logger.info(f"Starting workflow {self.__class__.__name__}")
     
     def get_workflow_logger(self: Self) -> WorkflowLogger:

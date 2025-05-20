@@ -25,8 +25,8 @@ class GdriveEtl(WorkflowEtl):
             self.generator_model_info
         )
 
-    def run(self: Self, predict_only=False) -> None:
-        super().run()
+    async def run(self: Self, predict_only=False) -> None:
+        await super().run()
         self.logger.info("Step 1: Listing files in Google Drive folder...")
         knowledge_files = self.gdrive_service.list_knowledge_files()
         self.logger.info(
@@ -59,7 +59,7 @@ class GdriveEtl(WorkflowEtl):
         self.logger.info(
             "Step 3: Deleting deleted and updated files from vector store...")
         for file_data in itertools.chain(files_to_update, files_to_delete):
-            self.vector_store.delete_vectors_for_source(
+            await self.vector_store.delete_vectors_for_source(
                 self.collection_name, file_data["name"])
         self.logger.info(
             "Step 3: Deleted and updated files have been deleted from vector store.")
@@ -78,7 +78,7 @@ class GdriveEtl(WorkflowEtl):
                         tmp_dir)
                     return
 
-                self.vector_store.build_from_directory_files(
+                await self.vector_store.build_from_directory_files(
                     self.collection_name, tmp_dir)
         self.logger.info("Step 5: Updating known files cache...")
         self._update_cache(files_to_create, files_to_update,
