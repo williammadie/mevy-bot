@@ -1,5 +1,6 @@
 import logging
 import time
+import asyncio
 import multiprocessing
 
 from mevy_bot.models.workflows import WorkflowInfo
@@ -33,15 +34,20 @@ class WorkflowService:
         WorkflowService.active_workflows[workflow_id] = workflow_info
 
     @staticmethod
-    def workflow_loop(workflow_id: int) -> None:
+    async def workflow_loop_async(workflow_id: int) -> None:
         workflow: WorkflowEtl = WorkflowFactory.create_workflow(
             workflow_id)
         workflow_logger = workflow.get_workflow_logger()
         workflow_delay = 60
         while True:
-            workflow.run()
-            workflow_logger.info(f"Next execution in {workflow_delay} seconds.")
+            await workflow.run()
+            workflow_logger.info(
+                f"Next execution in {workflow_delay} seconds.")
             time.sleep(workflow_delay)
+
+    @staticmethod
+    def workflow_loop(workflow_id):
+        asyncio.run(WorkflowService.workflow_loop_async(workflow_id))
 
     @staticmethod
     def stop_workflow(workflow_id: int) -> None:
@@ -61,6 +67,7 @@ class WorkflowService:
     def list_active_workflows() -> list:
         return list(WorkflowService.active_workflows.keys())
 
-if __name__  == "__main__":
+
+if __name__ == "__main__":
     workflow_service = WorkflowService()
     workflow_service.workflow_loop(1)

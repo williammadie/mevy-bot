@@ -7,6 +7,7 @@ from mevy_bot.etl.workflow_logger import WorkflowLogger
 
 l = logging.getLogger()
 
+
 class WorkflowFactory():
 
     @staticmethod
@@ -20,4 +21,3 @@ class WorkflowFactory():
             return LegifranceEtl(workflow_logger)
         else:
             raise ValueError(f"Workflow with id {workflow_id} does not exist.")
-        
