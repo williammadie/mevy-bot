@@ -1,7 +1,7 @@
 import os
 import logging
-from typing import Self, List, Sequence
-
+from typing import Self, List, Sequence, Callable, Coroutine
+from functools import wraps
 from http import HTTPStatus
 
 from qdrant_client import AsyncQdrantClient
@@ -25,12 +25,31 @@ l = logging.getLogger()
 VECTOR_DISTANCE = Distance.COSINE
 
 
+def ensure_collection_exists(method: Callable[..., Coroutine]) -> Callable[..., Coroutine]:
+    @wraps(method)
+    async def wrapper(self, *args, **kwargs):
+        collection_name = kwargs.get('collection_name') or (
+            args[0] if args else None)
+        if not collection_name:
+            raise ValueError("collection_name is required for this operation")
+
+        try:
+            if not await self.client.collection_exists(collection_name):
+                await self.create_collection(collection_name)
+        except Exception as e:
+            l.error("Failed to check or create collection '%s': %s",
+                    collection_name, e)
+            raise
+
+        return await method(self, *args, **kwargs)
+    return wrapper
+
 class QdrantCollection():
 
     URL = os.getenv('QDRANT_DB_URL')
 
     def __init__(self: Self, vector_dimensions: int) -> None:
-        self.vectore_dimensions = vector_dimensions
+        self.vector_dimensions = vector_dimensions
         self.client = self.get_qdrant_client()
 
     @staticmethod
@@ -41,11 +60,12 @@ class QdrantCollection():
         await self.client.create_collection(
             collection_name=name,
             vectors_config=VectorParams(
-                size=self.vectore_dimensions,
+                size=self.vector_dimensions,
                 distance=VECTOR_DISTANCE
             )
         )
 
+    @ensure_collection_exists
     async def insert_vectors_in_collection(
         self: Self,
         points: List[PointStruct],
@@ -60,6 +80,7 @@ class QdrantCollection():
             points=points
         )
 
+    @ensure_collection_exists
     async def search_in_collection(
         self: Self,
         collection_name: str,
@@ -72,6 +93,7 @@ class QdrantCollection():
             limit=max_output_documents
         )
 
+    @ensure_collection_exists
     async def delete_vectors_for_source(
             self: Self,
             collection_name: str,
