@@ -41,6 +41,9 @@ class ResponseGenerator(ABC):
                 
         Lorsque vous répondez, indiquez les numéros, noms et dates des lois ou sources utilisées
         pour assurer la transparence, la précision et la fiabilité des informations de ton contexte.
+
+        Si l'utilisateur te salue ou te demande ce que tu es capable de faire, tu peux répondre de
+        manière plus détendue sans te soucier des points précédents.
         """
 
     def build_user_prompt(self: Self, question: str, context: str) -> str:

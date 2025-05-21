@@ -39,24 +39,24 @@ async def websocket_endpoint(websocket: WebSocket):
 
             rewriter = OpenAIRewriter(generator_model_info.name)
             rewrited_user_query = rewriter.rewrite_user_query(user_query)
-            logger.debug("""User query:
+            logger.info("""User query:
                 %s
 
                 Rewrited query:
 
                 %s
                 """,
-                         user_query,
-                         rewrited_user_query)
+                        user_query,
+                        rewrited_user_query)
 
             context = await vector_store.search_in_store(
                 rewrited_user_query, collection_name)
-            logger.debug("Context:\n\n%s", context)
+            logger.info("Context:\n\n%s", context)
 
             generator = OpenAIGenerator(generator_model_info, vector_store)
 
             async for chunk in generator.generate_response_with_context_stream(
-                    rewrited_user_query, collection_name):
+                    user_query, collection_name):
                 await websocket.send_text(chunk)
 
             await websocket.send_text("[END]")  # Indicate end of response

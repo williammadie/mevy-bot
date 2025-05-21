@@ -39,15 +39,26 @@ class OpenAIGenerator(ResponseGenerator):
         system_prompt = self.build_system_prompt()
         user_prompt = self.build_user_prompt(question, context)
 
+        l.info(user_prompt)
+
         for chunk in self.openai_gateway.send_query_stream(system_prompt, user_prompt):
             yield chunk
 
     def refine_retrieved_context(self: Self, documents: List[ScoredPoint]) -> str:
         context = ""
         for doc in documents:
-            if doc.payload is not None and doc.score > 0.6:
-                doc_content = doc.payload.get('text')
-                context += f'{doc_content}\n\n'
+            if doc.payload is not None:
+                if doc.score > 0.6:
+                    doc_content = doc.payload.get('text')
+                    context += f'{doc_content}\n\n'
+                else:
+                    # We allow chunks related to meta-questions to have a smaller score
+                    # as these questions are highly generic and are mostly noise for
+                    # the semantic search algorithm
+                    doc_type = doc.payload.get('type')
+                    if doc_type == "meta" and doc.score > 0.3:
+                        doc_content = doc.payload.get('text')
+                        context += f'{doc_content}\n\n'
 
         if not context:
             context = """

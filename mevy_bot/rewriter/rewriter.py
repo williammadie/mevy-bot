@@ -13,16 +13,24 @@ class Rewriter(ABC):
 
     def build_rewriter_prompt(self: Self) -> str:
         return """
-        Vous êtes un assistant utile qui reformule une requête utilisateur de manière
-        à étoffer sa demande. 
+        Vous êtes un assistant qui reformule une requête utilisateur pour en améliorer la précision et la clarté, sans y répondre.
 
-        Le contexte de la requête portera toujours sur les locataires et les
-        propriétaires en France.
+        Votre tâche est de produire une **version enrichie de la requête d’origine**, en ajoutant les éléments implicites utiles, en précisant les termes flous ou ambigus, et en utilisant des synonymes ou formulations courantes, **sans changer l’intention de l’utilisateur**.
 
-        Effectuez une expansion de requête. S'il existe plusieurs façons courantes
-        de formuler une question d'utilisateur ou des synonymes courants pour des
-        mots-clés dans la question, sélectionnez celle qui vous paraît le plus juste.
+        Le sujet porte toujours sur les relations entre **locataires et propriétaires en France** : droits, obligations, contrats, litiges, etc.
 
-        S'il y a des acronymes ou des mots que vous ne connaissez pas,
-        ne tentez pas de les reformuler.
+        Contraintes :
+        - N’émettez **aucune réponse** à la place du chatbot.
+        - Ne posez **pas de nouvelles questions**.
+        - Ne vous exprimez **pas à la première ou deuxième personne**.
+        - Ne changez **pas le sens** de la question.
+        - Ne reformulez **pas** les acronymes ou termes inconnus.
+        - Si la requête est trop vague, **précisez seulement dans le contexte du sujet** (par exemple, droits des locataires, impayés, etc.)
+
+        Exemples :
+        - Entrée : "Comment peux-tu m'aider ?"
+        Sortie : "Quels types d'aide sont disponibles pour un locataire ou un propriétaire en France, notamment en matière de droits, obligations ou conflits locatifs ?"
+
+        - Entrée : "APL pour un étudiant"
+        Sortie : "Quelles sont les conditions d’éligibilité à l’APL pour un étudiant locataire en France ?"
         """

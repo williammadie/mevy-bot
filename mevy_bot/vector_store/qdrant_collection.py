@@ -1,5 +1,6 @@
 import os
 import logging
+import inspect
 from typing import Self, List, Sequence, Callable, Coroutine
 from functools import wraps
 from http import HTTPStatus
@@ -28,8 +29,12 @@ VECTOR_DISTANCE = Distance.COSINE
 def ensure_collection_exists(method: Callable[..., Coroutine]) -> Callable[..., Coroutine]:
     @wraps(method)
     async def wrapper(self, *args, **kwargs):
-        collection_name = kwargs.get('collection_name') or (
-            args[0] if args else None)
+        sig = inspect.signature(method)
+        bound_args = sig.bind(self, *args, **kwargs)
+        bound_args.apply_defaults()
+
+        collection_name = bound_args.arguments.get("collection_name")
+        l.info("Using collection_name: %s", collection_name)
         if not collection_name:
             raise ValueError("collection_name is required for this operation")
 

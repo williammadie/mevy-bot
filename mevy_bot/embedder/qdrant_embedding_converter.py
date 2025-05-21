@@ -37,7 +37,8 @@ class QdrantEmbeddingConverter(ABC):
             payload={
                 "text": text_chunk,
                 "source": filename,
-                "last_update_date": str_now
+                "last_update_date": str_now,
+                **({"type": "meta"} if "meta-questions" in filename else {})
             }
         )
 
