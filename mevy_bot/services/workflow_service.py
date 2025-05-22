@@ -12,6 +12,21 @@ l = logging.getLogger()
 
 
 class WorkflowService:
+    workflows = [
+        {
+            "id": 1,
+            "name": "Google Drive",
+            "description": "Watch files in Google Drive storage and update/delete/insert knowledge accordingly.",
+            "triggerInterval": 1
+        },
+        {
+            "id": 2,
+            "name": "Legifrance",
+            "description": "Collect latest French laws and regulations.",
+            "triggerInterval": 31
+        },
+    ]
+
     active_workflows: dict[int, WorkflowInfo] = {}
 
     @staticmethod
@@ -64,8 +79,28 @@ class WorkflowService:
         WorkflowService.active_workflows.pop(workflow_id)
 
     @staticmethod
+    def list_workflows() -> list:
+        for workflow in WorkflowService.workflows:
+            workflow["isActive"] = WorkflowService.is_workflow_active(
+                workflow["id"])
+        return WorkflowService.workflows
+
+    @staticmethod
     def list_active_workflows() -> list:
         return list(WorkflowService.active_workflows.keys())
+
+    @staticmethod
+    def get_workflow_by_id(workflow_id) -> dict:
+        for workflow in WorkflowService.workflows:
+            if workflow["id"] == workflow_id:
+                workflow["isActive"] = WorkflowService.is_workflow_active(
+                    workflow["id"])
+                return workflow
+        raise ValueError(f"Workflow with id {workflow_id} does not exist")
+
+    @staticmethod
+    def is_workflow_active(workflow_id: int) -> bool:
+        return workflow_id in WorkflowService.active_workflows
 
 
 if __name__ == "__main__":

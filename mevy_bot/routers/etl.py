@@ -46,20 +46,7 @@ async def list_active_workflows():
 
 @router.get("/all", dependencies=[Depends(CookieAuthentication())])
 async def list_workflows():
-    return [
-        {
-            "id": 1,
-            "name": "Google Drive",
-            "description": "Watch files in Google Drive storage and update/delete/insert knowledge accordingly.",
-            "isActive": False,
-        },
-        {
-            "id": 2,
-            "name": "Legifrance",
-            "description": "Collect latest French laws and regulations.",
-            "isActive": False,
-        },
-    ]
+    return WorkflowService.list_workflows()
 
 
 @router.get("/logs/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
@@ -79,10 +66,4 @@ async def retrieve_logs(workflow_id: int):
 
 @router.get("/details/{workflow_id}", dependencies=[Depends(CookieAuthentication())])
 async def get_workflow_details(workflow_id: int):
-    return {
-        "id": 1,
-        "name": "Google Drive",
-        "description": "Watch files in Google Drive storage and update/delete/insert knowledge accordingly.",
-        "isActive": False,
-        "triggerInterval": "Every 60 seconds"
-    }
+    return WorkflowService.get_workflow_by_id(workflow_id)
