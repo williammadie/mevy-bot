@@ -78,3 +78,6 @@ class DatabaseHandler:
                 logger.info("Database %s created successfully.", db_name)
         except SQLAlchemyError as e:
             logger.error("Error creating database.", exc_info=e)
+
+    def get_session_object(self):
+        return self.get_session()

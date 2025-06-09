@@ -1,11 +1,14 @@
 import os
 import logging
+from datetime import datetime
 from http import HTTPStatus
-from fastapi import APIRouter, HTTPException, Depends, Response
+
+from fastapi import APIRouter, HTTPException, Depends, Response, Request
 from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from mevy_bot.database.database_handler import DatabaseHandler
+from mevy_bot.database.redis_handler import RedisHandler
 from mevy_bot.dtos.user import UserDto, UserLoginDto
 from mevy_bot.authentication.authentication_handler import AuthenticationHandler
 from mevy_bot.services.user_service import UserService
@@ -13,6 +16,10 @@ from mevy_bot.authentication.cookie_authentication import CookieAuthentication
 
 router = APIRouter(prefix="/authentication", tags=["Authentication"])
 db_handler = DatabaseHandler()
+redis_handler = RedisHandler()
+APP_MODE = os.environ.get("APP_MODE", "production").lower()
+MAX_LOGIN_ATTEMPTS = 3
+TIMEOUT_SECONDS = 3600
 
 logger = logging.getLogger(__name__)
 
@@ -25,33 +32,67 @@ def get_db():
         db.close()
 
 
-@router.post("/register")
-def register(user_dto: UserDto, db: Session = Depends(get_db)):
-    # TODO: insert user in DB (hash password first)
-    user_service = UserService(db)
-    user = user_service.get_user_by_email(user_dto.email)
+if APP_MODE == "development":
+    @router.post("/register")
+    def register(user_dto: UserDto, db: Session = Depends(get_db)):
+        user_service = UserService(db)
+        user = user_service.get_user_by_email(user_dto.email)
 
-    if user:
-        raise HTTPException(HTTPStatus.CONFLICT,
-                            "User already exists with this email.")
+        if user:
+            raise HTTPException(HTTPStatus.CONFLICT,
+                                "User already exists with this email.")
 
-    hashed_password_bytes = AuthenticationHandler.hash_password(
-        user_dto.password)
-    user_service.create_user(
-        user_dto.email,
-        user_dto.full_name,
-        hashed_password_bytes
-    )
+        hashed_password_bytes = AuthenticationHandler.hash_password(
+            user_dto.password)
+        user_service.create_user(
+            user_dto.email,
+            user_dto.full_name,
+            hashed_password_bytes
+        )
 
-    return AuthenticationHandler.sign_jwt(user_dto.email)
+        return AuthenticationHandler.sign_jwt(user_dto.email)
 
 
 @router.post("/login")
-def login(user_dto: UserLoginDto, response: Response, db: Session = Depends(get_db)):
+def login(
+    user_dto: UserLoginDto,
+    request: Request,
+    response: Response,
+    db: Session = Depends(get_db)
+):
+    # Gather request metadata
+    ip_address = request.client.host
+    user_agent = request.headers.get('user-agent', 'unknown')
+
+    # Check Redis rate limit
+    rate_limit_key = f"login_attempts:{user_dto.email}:{ip_address}"
+    if redis_handler.is_rate_limited(
+        rate_limit_key,
+        max_attempts=MAX_LOGIN_ATTEMPTS,
+        window_seconds=TIMEOUT_SECONDS
+    ):
+        logger.warning(
+            "[%s] Rate limit exceeded | IP: %s | User-Agent: %s",
+            datetime.utcnow(),
+            ip_address,
+            user_agent
+        )
+        raise HTTPException(
+            status_code=429,
+            detail="Too many login attempts. Try again in a minute."
+        )
+
+    # Retrieve user from the database
     user_service = UserService(db)
     user = user_service.get_user_by_email(user_dto.email)
-
     if not user:
+        logger.warning(
+            "[%s] Failed login attempt - User not found | Email: %s | IP: %s | User-Agent: %s",
+            datetime.utcnow(),
+            user_dto.email,
+            ip_address,
+            user_agent
+        )
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="Email or password is invalid."
@@ -62,10 +103,20 @@ def login(user_dto: UserLoginDto, response: Response, db: Session = Depends(get_
         user.password_hash
     )
     if not is_pwd_correct:
+        logger.warning(
+            "[%s] Failed login attempt - User not found | Email: %s | IP: %s | User-Agent: %s",
+            datetime.utcnow(),
+            user_dto.email,
+            ip_address,
+            user_agent
+        )
         raise HTTPException(
             HTTPStatus.FORBIDDEN,
             detail="Email or password is invalid."
         )
+
+    # Reset the rate limit key after successful login
+    redis_handler.reset_key(rate_limit_key)
 
     # Create the JWT token using AuthenticationHandler
     access_token = AuthenticationHandler.sign_jwt(user_dto.email)

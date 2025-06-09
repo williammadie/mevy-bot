@@ -1,6 +1,7 @@
 import os
 
 from mevy_bot.database.database_handler import DatabaseHandler
+from mevy_bot.database.redis_handler import RedisHandler
 
 
 class HealthcheckService:
@@ -13,6 +14,9 @@ class HealthcheckService:
     def get_kpis() -> dict:
         database_handler = DatabaseHandler()
         db_status = database_handler.healthcheck()
+
+        redis_handler = RedisHandler()
+        redis_status = redis_handler.healthcheck()
         return {
             "authentication": {
                 "is_jwt_secret_set": HealthcheckService.JWT_SECRET is not None,
@@ -21,5 +25,8 @@ class HealthcheckService:
             },
             "business_db": {
                 "status": "UP" if db_status else "DOWN"
+            },
+            "redis": {
+                "status": "UP" if redis_status else "DOWN"
             }
         }
