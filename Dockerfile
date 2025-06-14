@@ -26,14 +26,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy the actual source code
 COPY ./mevy_bot /app/mevy_bot
 
-# Copy data definition
-COPY ./data_definition/auto_sources.json /app/data_definition/auto_sources.json
-
 RUN echo "# Project README" > /app/README.md
 
 # Sync again to install the project itself
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-# Start the FastAPI production server
-CMD ["fastapi", "run", "mevy_bot/routers/main.py", "--host", "0.0.0.0"]
+# Start the FastAPI dev server
+CMD ["fastapi", "dev", "mevy_bot/routers/main.py", "--host", "0.0.0.0"]
