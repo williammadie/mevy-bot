@@ -1,0 +1,44 @@
+{
+    "codes": [
+        "Code civil",
+        "Code de la construction et de l'habitation",
+        "Code de la consommation",
+        "Code des assurances",
+        "Code de commerce",
+        "Code des communes",
+        "Code de la consommation",
+        "Code de déontologie des architectes",
+        "Code de l'énergie",
+        "Code de l'environnement",
+        "Code de l'expropriation pour cause d'utilité publique",
+        "Code de la famille et de l'aide sociale",
+        "Code forestier (nouveau)",
+        "Code général des impôts",
+        "Code général des impôts, annexe I",
+        "Code général des impôts, annexe II",
+        "Code général des impôts, annexe III",
+        "Code général des impôts, annexe IV",
+        "Code des impositions sur les biens et services",
+        "Code des juridictions financières",
+        "Code de justice administrative",
+        "Livre des procédures fiscales",
+        "Code monétaire et financier",
+        "Code du patrimoine",
+        "Code de procédure civile",
+        "Code de procédure pénale",
+        "Code de l'urbanisme",
+        "Code de la sécurité sociale"
+    ],
+    "decrets": [
+        {
+            "name": "Modèle de bail réglementaire",
+            "id": "LEGIARTI000043842254"
+        }
+    ],
+    "arretes": [
+        {
+            "name": "Arrêté du 29 mai 2015 relatif au contenu de la notice d'information annexée aux contrats de location de logement à usage de résidence principale",
+            "id": "JORFTEXT000030649902"
+        }
+    ]
+}

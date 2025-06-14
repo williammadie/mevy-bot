@@ -2,7 +2,7 @@
 .env
 
 # Data
-data_definition/**
+data_definition/manual_sources.csv
 data_storage/**
 data_storage**
 secrets/**
