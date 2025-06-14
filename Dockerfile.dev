@@ -32,5 +32,5 @@ RUN echo "# Project README" > /app/README.md
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
 
-# Start the FastAPI production server
-CMD ["fastapi", "run", "mevy_bot/routers/main.py", "--host", "0.0.0.0"]
+# Start the FastAPI dev server
+CMD ["fastapi", "dev", "mevy_bot/routers/main.py", "--host", "0.0.0.0"]

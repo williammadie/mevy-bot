@@ -104,7 +104,7 @@ def login(
     )
     if not is_pwd_correct:
         logger.warning(
-            "[%s] Failed login attempt - User not found | Email: %s | IP: %s | User-Agent: %s",
+            "[%s] Failed login attempt - Password incorrect | Email: %s | IP: %s | User-Agent: %s",
             datetime.utcnow(),
             user_dto.email,
             ip_address,
