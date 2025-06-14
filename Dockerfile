@@ -26,6 +26,12 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Copy the actual source code
 COPY ./mevy_bot /app/mevy_bot
 
+# Copy data definition
+COPY ./data_definition/auto_sources.json /app/data_definition/auto_sources.json
+
+# Copy utility scripts
+COPY ./scripts /app/scripts
+
 RUN echo "# Project README" > /app/README.md
 
 # Sync again to install the project itself
