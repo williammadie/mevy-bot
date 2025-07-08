@@ -69,7 +69,11 @@ class GdriveEtl(WorkflowEtl):
             for file in itertools.chain(files_to_create, files_to_update):
                 self.logger.info(f"Step 4: Downloading file {file}...")
                 self.gdrive_service.download_and_write_file(
-                    file["id"], file["name"], tmp_dir)
+                    file.get("id"),
+                    file.get("name"),
+                    file.get("mimeType"),
+                    tmp_dir
+                )
                 self.logger.info(f"Step 4: File {file} downloaded.")
                 self.logger.info("Step 4: All files have been downloaded.")
 

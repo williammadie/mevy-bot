@@ -16,7 +16,7 @@ class AuthenticationHandler:
 
     JWT_SECRET = os.environ.get("JWT_SECRET")
     JWT_SIGNING_ALGORITHM = os.environ.get("JWT_SIGNING_ALGORITHM")
-    JWT_TTL_IN_SECONDS = int(os.environ.get("JWT_TTL_IN_SECONDS"))
+    JWT_TTL_IN_SECONDS = int(os.environ.get("JWT_TTL_IN_SECONDS", "600"))
 
     @staticmethod
     def generate_jwt_secret(secret_length: int = 24) -> bytes:
@@ -83,7 +83,6 @@ class AuthenticationHandler:
     def is_password_correct(input_password, known_password_hash) -> bool:
         input_password_bytes = input_password.encode("utf8")
         return bcrypt.checkpw(input_password_bytes, known_password_hash)
-
 
 
 if __name__ == "__main__":

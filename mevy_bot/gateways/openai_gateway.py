@@ -30,7 +30,6 @@ class OpenAIGateway:
                     "content": user_prompt
                 }
             ],
-            temperature=self.MODEL_TEMPERATURE,
             stream=False
         )
 
@@ -52,7 +51,6 @@ class OpenAIGateway:
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": user_prompt}
             ],
-            temperature=self.MODEL_TEMPERATURE,
             stream=True
         )
 

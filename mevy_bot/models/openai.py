@@ -52,3 +52,13 @@ class OpenAIModelFactory:
             price_per_1k_input_tokens=Decimal("0.000150"),
             price_per_1k_output_tokens=Decimal("0.000600")
         )
+
+    @staticmethod
+    def gpt4o_mini_search_preview() -> ChatModel:
+        return ChatModel(
+            name="gpt-4o-mini-search-preview",
+            max_tokens_input=128_000,
+            max_tokens_output=16_000,
+            price_per_1k_input_tokens=Decimal("0.000150"),
+            price_per_1k_output_tokens=Decimal("0.000600")
+        )

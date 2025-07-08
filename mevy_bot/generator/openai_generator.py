@@ -22,11 +22,17 @@ class OpenAIGenerator(ResponseGenerator):
         self.chat_model_info = chat_model_info
         self.openai_gateway = OpenAIGateway(chat_model_info.name)
 
+    async def generate_social_response_stream(self: Self, question: str, meta_knowledge: str) -> AsyncGenerator:
+        system_prompt = self.build_social_system_prompt()
+        user_prompt = self.build_user_prompt(question, meta_knowledge)
+        for chunk in self.openai_gateway.send_query_stream(system_prompt, user_prompt):
+            yield chunk
+
     def generate_response_with_context(self: Self, question: str, collection_name: str) -> str:
         context_documents = self.retrieve_context_documents(
             question, collection_name)
         context = self.refine_retrieved_context(context_documents)
-        system_prompt = self.build_system_prompt()
+        system_prompt = self.build_expert_system_prompt()
         user_prompt = self.build_user_prompt(question, context)
         return self.openai_gateway.send_query(system_prompt, user_prompt)
 
@@ -36,7 +42,7 @@ class OpenAIGenerator(ResponseGenerator):
         context_documents = await self.retrieve_context_documents(
             question, collection_name)
         context = self.refine_retrieved_context(context_documents)
-        system_prompt = self.build_system_prompt()
+        system_prompt = self.build_expert_system_prompt()
         user_prompt = self.build_user_prompt(question, context)
 
         l.info(user_prompt)
@@ -62,9 +68,13 @@ class OpenAIGenerator(ResponseGenerator):
 
         if not context:
             context = """
-            Je ne dispose pas des informations nécessaires pour répondre à cette demande.
+            <knowledge>
+            Aucune information ne permet de répondre à cette demande.
             
-            Pour plus d'informations, je vous invite à réitérer votre demande auprès d'un opérateur Mevy.
+            Une recherche Internet peut être effectuée si possible. Si aucune
+            information pertinente n'en ressort, demandez à l'utilisateur
+            de contacter un opérateur Mevy. 
+            </knowledge>
             """
 
         return context

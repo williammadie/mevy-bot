@@ -1,4 +1,5 @@
 from collections import deque
+import io
 from typing import Self, List
 
 from PyPDF2 import PdfReader
@@ -30,6 +31,14 @@ class FileReader:
             for page in pdf_reader.pages:
                 file_text += page.extract_text()
         return file_text
+
+    def read_text_from_pdf_as_bytes(self: Self, pdf_bytes: bytes) -> str:
+        pdf_stream = io.BytesIO(pdf_bytes)
+        pdf_reader = PdfReader(pdf_stream)
+        text = ""
+        for page in pdf_reader.pages:
+            text += page.extract_text() or ""
+        return text
 
     @staticmethod
     def tail(file_path: str, n:int=1000) -> List[str]:

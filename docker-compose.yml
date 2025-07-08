@@ -12,6 +12,8 @@ services:
       - "8000:8000"
     networks:
       - mevy-network
+    volumes:
+      - ./secrets/credentials.json:/app/secrets/credentials.json:ro
 
 networks:
   mevy-network:
