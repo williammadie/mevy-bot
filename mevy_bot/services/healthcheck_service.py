@@ -2,6 +2,7 @@ import os
 
 from mevy_bot.database.database_handler import DatabaseHandler
 from mevy_bot.database.redis_handler import RedisHandler
+from mevy_bot.blockchain.blockchain_handler import BlockchainHandler
 
 
 class HealthcheckService:
@@ -17,6 +18,10 @@ class HealthcheckService:
 
         redis_handler = RedisHandler()
         redis_status = redis_handler.healthcheck()
+
+        blockchain_handler = BlockchainHandler()
+        blockchain_status = blockchain_handler.healthcheck()
+
         return {
             "authentication": {
                 "is_jwt_secret_set": HealthcheckService.JWT_SECRET is not None,
@@ -28,5 +33,8 @@ class HealthcheckService:
             },
             "redis": {
                 "status": "UP" if redis_status else "DOWN"
+            },
+            "blockchain_network": {
+                "status": "UP" if blockchain_status else "DOWN"
             }
         }
