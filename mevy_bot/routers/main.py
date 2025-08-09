@@ -14,7 +14,8 @@ from mevy_bot.routers import (
     vector_store,
     chat,
     auth,
-    healthcheck
+    healthcheck,
+    document
 )
 
 from mevy_bot.database.database_handler import DatabaseHandler
@@ -96,13 +97,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 @app.middleware("http")
 async def add_security_headers(request, call_next):
     response = await call_next(request)
     response.headers['Strict-Transport-Security'] = 'max-age=63072000; includeSubDomains'
     response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['Content-Security-Policy'] = "default-src 'self'"
+    # response.headers['Content-Security-Policy'] = "default-src 'self'"
     response.headers['X-XSS-Protection'] = '1; mode=block'
     return response
 
@@ -112,3 +114,4 @@ app.include_router(legifrance.router)
 app.include_router(chat.router)
 app.include_router(auth.router)
 app.include_router(healthcheck.router)
+app.include_router(document.router)
