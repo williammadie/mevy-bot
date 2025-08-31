@@ -3,6 +3,8 @@ import json
 import logging
 from typing import Self
 
+from web3.contract import Contract
+
 from mevy_bot.blockchain.blockchain_handler import BlockchainHandler
 from mevy_bot.models.blockchain import DocumentMetadata
 
@@ -122,12 +124,6 @@ class DocumentVerifierService:
             raise ValueError(
                 "BLOCKCHAIN_DOCUMENT_VERIFIER_CONTRACT_ADDRESS is not set in the environment variables.")
 
-        web3 = blockchain_handler.get_web3()
-        self.contract = web3.eth.contract(
-            address=self.contract_address,
-            abi=CONTRACT_ABI
-        )
-
         self.account_address = os.environ.get(
             "BLOCKCHAIN_ACCOUNT_ADDRESS")
         if not self.account_address:
@@ -140,21 +136,33 @@ class DocumentVerifierService:
             raise ValueError(
                 "BLOCKCHAIN_ACCOUNT_PRIVATE_KEY is not set in the environment variables.")
 
+    def get_contract(self: Self) -> Contract:
+        return self.blockchain_handler.get_web3().eth.contract(    # type: ignore
+            address=self.contract_address,  # type: ignore
+            abi=CONTRACT_ABI
+        )
+
     def get_document_metadata(
         self: Self,
-        document_hash: str,
+        document_hash: bytes,
     ) -> DocumentMetadata:
-        document_hash_bytes = self.blockchain_handler.get_web3().keccak(text=document_hash)
         try:
-            author, title, timestamp = self.contract.functions.getDocumentMetadata(
-                document_hash_bytes).call()
+            author, title, timestamp = self.get_contract().functions.getDocumentMetadata(
+                document_hash).call()
         except Exception as e:
             logging.error(f"Error fetching document metadata: {e}")
-        return DocumentMetadata(
-            author_username=author,
-            document_title=title,
-            last_modified_timestamp=timestamp
-        )
+
+        try:
+            return DocumentMetadata(
+                document_hash=document_hash.hex(),
+                author_username=author,
+                document_title=title,
+                last_modified_timestamp=timestamp
+            )
+        except UnboundLocalError as err:
+            raise FileNotFoundError(
+                f"No record found for document hash: {document_hash.hex()}"
+            ) from err
 
     def set_document_metadata(
         self: Self, document_hash,
@@ -162,21 +170,21 @@ class DocumentVerifierService:
     ) -> None:
 
         # Estimate gas for the transaction
-        estimated_gas = self.contract.functions.setDocumentMetadata(
+        estimated_gas = self.get_contract().functions.setDocumentMetadata(
             document_hash,
             document_metadata.author_username,
             document_metadata.document_title,
             document_metadata.last_modified_timestamp
-        ).estimate_gas({'from': self.account_address})
+        ).estimate_gas({'from': self.account_address})  # type: ignore
 
         # Build the transaction
-        tx = self.contract.functions.setDocumentMetadata(
+        tx = self.get_contract().functions.setDocumentMetadata(
             document_hash,
             document_metadata.author_username,
             document_metadata.document_title,
             document_metadata.last_modified_timestamp
         ).build_transaction({
-            'from': self.account_address,
+            'from': self.account_address,  # type: ignore
             'nonce': self.blockchain_handler.get_web3().eth.get_transaction_count(self.account_address),
             'gas': estimated_gas + GAS_BUFFER,
             'gasPrice': self.blockchain_handler.get_web3().eth.gas_price
